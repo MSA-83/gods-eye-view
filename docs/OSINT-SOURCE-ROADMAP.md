@@ -256,3 +256,28 @@ A further official-source review identified three useful strategic-context datas
 
 SIPRI, the World Bank's SIPRI-derived indicator, and NATO expenditure tables are not three independent confirmations of a single event. Keep them as separate source records, preserve their lineage and definitions, and use them for slow-moving strategic baselines rather than event attribution.
 
+
+
+## 14. UN arms-transparency and trade-statistics sources (2026-11-17)
+
+### United Nations Register of Conventional Arms (UNROCA)
+
+- **Coverage:** Annual government-reported international transfers across seven categories of major conventional arms, with an optional additional small-arms/light-weapons category and invited background information on holdings, national production and policies.
+- **Access:** Public state submissions and UN Secretary-General reports via UNROCA and the UN Digital Library. No stable public API was verified in this review.
+- **Reporting caveat:** Participation and completeness vary. A nil return may cover up to three years under UN rules; a missing submission is not evidence that no transfer occurred. State reporting may distinguish actual transfers from authorizations. Preserve that distinction.
+- **Integration:** Ingest versioned report/document metadata and tabular data only after validating the reporting year, state, category, nil-return status, and whether values represent actual transfers or authorizations.
+- **Official sources:** https://www.unroca.org/ ; https://digitallibrary.un.org/record/4124068 ; https://mandates.un.org/mandate/A/RES/80/28
+
+### UN Comtrade HS Chapter 93
+
+- **Coverage:** Reported international merchandise trade statistics, including HS Chapter 93 (arms and ammunition; parts and accessories). This is a customs classification, not a complete military-equipment taxonomy.
+- **Access:** Public keyless preview API; official API documentation advertises up to 500 preview records. The free registered tier currently advertises up to 500 API calls/day, 1 call/second and 100,000 records per call; confirm limits before enabling an adapter.
+- **Terms and credentials:** Follow UN Comtrade fair-use policy. A registered API key belongs in server-side secret storage only, never in browser code, fixtures or URLs committed to Git.
+- **Integration:** Use annual country/partner aggregates for historical trade context; preserve reporter, partner, flow, HS revision, period, publication/release date, units and API query. Prefer the keyless preview for contract tests.
+- **Caveat:** Customs reporting can be delayed, revised, asymmetric or incomplete. HS93 does not cover every defence-related product and is not proof of actual delivery, deployment or operational intent.
+- **Official sources:** https://comtradeplus.un.org/en/api-docs ; https://comtradeplus.un.org/en/subscriptions ; https://uncomtrade.org/docs/policy-on-comtrade-data-use/
+
+### Source-independence and triangulation
+
+UNROCA, UN Comtrade and SIPRI are different datasets with different reporting methods and scopes. They may overlap in underlying government declarations or trade records. Do not count them as independent corroboration without tracing source lineage. Keep UNROCA state-reported transfers, customs trade statistics and SIPRI's research-coded arms-transfer series separate.
+
