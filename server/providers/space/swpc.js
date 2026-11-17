@@ -45,11 +45,7 @@ function validTime(value) {
   const normalized = value.includes(' ')
     ? value.replace(' ', 'T') + 'Z'
     : value;
-  if (
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(
-      normalized,
-    )
-  )
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(normalized))
     return null;
   const date = new Date(normalized);
   if (!Number.isFinite(date.getTime())) return null;
@@ -63,10 +59,7 @@ function numeric(value, { nullable = false } = {}) {
   if (nullable && (value === null || value === '')) return null;
   if (typeof value !== 'number' && typeof value !== 'string')
     throw failure('swpc_schema_drift');
-  if (
-    typeof value === 'string' &&
-    !/^-?\d+(?:\.\d+)?$/.test(value.trim())
-  )
+  if (typeof value === 'string' && !/^-?\d+(?:\.\d+)?$/.test(value.trim()))
     throw failure('swpc_schema_drift');
   const result = Number(value);
   if (!Number.isFinite(result)) throw failure('swpc_schema_drift');
@@ -213,9 +206,7 @@ export function swpcProxy({
           const status = response.status;
           await response.body?.cancel();
           throw failure(
-            status === 429
-              ? 'swpc_rate_limited'
-              : 'swpc_upstream_unavailable',
+            status === 429 ? 'swpc_rate_limited' : 'swpc_upstream_unavailable',
             status === 429 ? 429 : 502,
           );
         }
@@ -242,7 +233,8 @@ export function swpcProxy({
           sourceVersion: 'swpc-operational-json-2026',
           sourceType: 'observation',
           attribution: 'NOAA Space Weather Prediction Center',
-          license: 'U.S. Government data; preserve NOAA attribution and notices',
+          license:
+            'U.S. Government data; preserve NOAA attribution and notices',
         });
         const entry = { rows, fetchedAt, fetchedAtMs, latest, provenance };
         cache.set(product, entry);
@@ -283,7 +275,8 @@ export function swpcProxy({
       res.end(JSON.stringify(body));
     };
     if (req.method !== 'GET') return send(405, { error: 'method_not_allowed' });
-    if (req.url !== '/' && req.url !== '') return send(400, { error: 'invalid_query' });
+    if (req.url !== '/' && req.url !== '')
+      return send(400, { error: 'invalid_query' });
     const results = await Promise.all(
       Object.keys(PRODUCTS).map(async (product) => {
         try {
