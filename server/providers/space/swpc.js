@@ -183,7 +183,9 @@ export function normalizeSwpcProduct(product, payload) {
   return normalizeRows(spec.kind, payload);
 }
 
-/** Read-only NOAA SWPC adapter using the replacement RTSW endpoints from 2026. */
+/**
+ * Read-only NOAA SWPC adapter using the replacement RTSW endpoints from 2026.
+ */
 export function swpcProxy({
   fetchImpl = (...args) => globalThis.fetch(...args),
   now = () => Date.now(),
