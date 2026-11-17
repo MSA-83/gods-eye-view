@@ -23,7 +23,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Format adopted runtime source
-        run: npm run format -- --write
+        run: npm run format
       - name: Commit formatter output
         run: |
           git config user.name "github-actions[bot]"
