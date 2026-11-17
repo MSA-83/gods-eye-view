@@ -370,3 +370,26 @@ The adapter normalizes records, caps response size and retained row counts, vali
 The adapter is a contextual data feed only. Space-weather observations can help assess environmental conditions relevant to GNSS, HF radio and satellite operations; they do not establish the cause of a GNSS anomaly, nor do they prove intentional interference. Keep the deterministic GNSS classifier independent from this feed.
 
 Validation currently covers current object rows, legacy fixture compatibility, replacement RTSW field names, source-selection metadata, timestamp handling, Kp range checks, alert text bounds and URL scheme filtering. Live upstream integration, UI presentation, end-to-end route tests and Android/Termux validation remain pending.
+
+
+## 14. UCDP GED versioned event adapter
+
+**Status: server adapter and synthetic contract tests implemented; token and UI integration remain pending.**
+
+The local provider stack exposes a read-only `GET /api/conflict-events/ucdp` route backed by the fixed UCDP GED API resource `gedevents/26.1`. The adapter requires a server-side `UCDP_API_TOKEN` environment variable and sends it only in the documented `x-ucdp-access-token` header. It does not place credentials in URLs, browser code, provenance or logs. No token was present during this implementation, so no live UCDP API request was made.
+
+The request contract is deliberately bounded:
+
+- Explicit `startDate` and `endDate` are required and must fall within GED 26.1 coverage, 1989-01-01 through 2025-12-31.
+- Maximum date window is 31 calendar days; the upstream API applies both `StartDate` and `EndDate` to `date_end`.
+- Page size is fixed at 100. The client can request one validated page at a time.
+- Optional `country` (Gleditsch and Ward country IDs) and `type` (1, 2 or 3) filters are validated before constructing the fixed upstream URL.
+- A process-local 4,500-request rolling 24-hour budget stays below UCDP's published 5,000/day quota; an additional per-client minute limiter, single-flight request coalescing, 24-hour page cache and bounded stale fallback reduce upstream load. This budget is per server process, not a distributed quota ledger.
+
+The normalized event record preserves the stable UCDP `id`, the version-specific `relid`, actor/dyad new IDs, source references, date range and `date_prec`, location coordinates and `where_prec`, and the separate low/best/high fatality estimates. It explicitly preserves `number_of_sources = -1` rather than converting it to zero. Each event receives a provenance envelope pinned to GED 26.1 and CC BY 4.0 attribution.
+
+**Interpretation guardrails:** GED records organized violence where armed force by an organized actor caused at least one direct death. It is not a complete feed of all violence and it is not real-time. `where_prec` values 3–7 may describe administrative centroids, broad/fuzzy features, country-only locations or international waters/airspace; do not render every coordinate as an exact point. `date_prec` values 2–5 represent wider temporal uncertainty. Keep the low/best/high fatality interval intact and do not infer intent, readiness or current operational status from the dataset.
+
+The UCDP Candidate Events Dataset is not included in this adapter. The current download center lists the September 2026 monthly release as 26.0.9, while the API documentation page still lists an older candidate API release. Do not silently substitute Candidate Events for GED or assume the API version is current; evaluate the published download/codebook and API release separately before adding it.
+
+**Credential follow-up:** request an API token from the UCDP API maintainer and configure `UCDP_API_TOKEN` in the server environment. The token must never be committed to the repository or added to client-side settings. Live API verification, browser/UI integration, multi-process quota accounting and Android/Termux deployment validation remain pending.
