@@ -355,3 +355,18 @@ World Bank indicators `MS.MIL.XPND.GD.ZS` (military expenditure as a share of GD
 ### Comparability rule
 
 SIPRI, NATO and EDA figures may diverge because their definitions, reporting periods, coverage, GDP assumptions, treatment of pensions/paramilitary forces and estimate cut-off dates differ. A difference is not automatically an error or evidence of concealment. Preserve parallel series with source-specific metadata; compare only after an explicit definition crosswalk.
+
+
+## 13. NOAA SWPC adapter implementation
+
+**Status: implemented on feature branch; contract tests added; runtime CI pending.**
+
+The local provider stack exposes a read-only `GET /api/space-weather` route. It requests four fixed NOAA SWPC products: active alerts, planetary Kp, replacement RTSW magnetic-field data, and replacement RTSW solar-wind plasma data. Each feed has an independent cache lifetime and health classification; partial upstream failure can retain a previous successful response with an explicit partial/stale marker.
+
+The adapter normalizes records, caps response size and retained row counts, validates timestamps and numeric ranges, preserves the RTSW `source` and `active` fields, and attaches the common provenance envelope. It refuses client-selected upstream URLs and applies the existing same-site keyless request gate. No API key is required and no client-side secret is introduced.
+
+**Important 2026 compatibility note:** NOAA/NWS Service Change Notice 26-21 announces the March 2026 transition of planetary Kp and related products to object rows and the April 2026 retirement of legacy `/products/solar-wind/*` endpoints. The adapter uses `/json/rtsw/rtsw_mag_1m.json` and `/json/rtsw/rtsw_wind_1m.json`, whose records expose satellite `source` and forecaster `active` metadata. Do not revert to the retired plasma/magnetometer paths.
+
+The adapter is a contextual data feed only. Space-weather observations can help assess environmental conditions relevant to GNSS, HF radio and satellite operations; they do not establish the cause of a GNSS anomaly, nor do they prove intentional interference. Keep the deterministic GNSS classifier independent from this feed.
+
+Validation currently covers current object rows, legacy fixture compatibility, replacement RTSW field names, source-selection metadata, timestamp handling, Kp range checks, alert text bounds and URL scheme filtering. Live upstream integration, UI presentation, end-to-end route tests and Android/Termux validation remain pending.
