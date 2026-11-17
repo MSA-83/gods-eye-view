@@ -52,7 +52,9 @@ const fixture = {
   gwnob: null,
 };
 
-test('builds fixed-version UCDP requests with bounded date filters and pagination', () => {
+test(
+  'builds fixed-version UCDP requests with bounded date filters and pagination',
+  () => {
   const request = buildUcdpRequest(
     'http://localhost/?startDate=2025-11-01&endDate=2025-11-30&page=2&country=999&type=1,3',
   );
@@ -68,7 +70,9 @@ test('builds fixed-version UCDP requests with bounded date filters and paginatio
   assert.equal(upstream.searchParams.has('token'), false);
 });
 
-test('rejects open-ended, over-wide, out-of-coverage and unknown filters', () => {
+test(
+  'rejects open-ended, over-wide, out-of-coverage and unknown filters',
+  () => {
   assert.throws(
     () => buildUcdpRequest('http://localhost/?startDate=2025-11-01'),
     /ucdp_date_range_required/,
@@ -96,7 +100,9 @@ test('rejects open-ended, over-wide, out-of-coverage and unknown filters', () =>
   );
 });
 
-test('preserves event IDs, coded date/location precision and fatality ranges', () => {
+test(
+  'preserves event IDs, coded date/location precision and fatality ranges',
+  () => {
   const event = normalizeUcdpEvent(fixture);
   assert.equal(event.id, 42);
   assert.equal(event.relid, 'AAA-2025-1-123-1');
@@ -116,7 +122,9 @@ test('preserves event IDs, coded date/location precision and fatality ranges', (
   assert.equal(event.source.numberOfSources, -1);
 });
 
-test('rejects malformed coordinates, invalid precision and inconsistent fatality ranges', () => {
+test(
+  'rejects malformed coordinates, invalid precision and inconsistent fatality ranges',
+  () => {
   assert.throws(
     () => normalizeUcdpEvent({ ...fixture, latitude: 91 }),
     /ucdp_schema_drift/,
@@ -146,7 +154,9 @@ test('rejects malformed coordinates, invalid precision and inconsistent fatality
   );
 });
 
-test('adds versioned provenance to each event without token leakage', () => {
+test(
+  'adds versioned provenance to each event without token leakage',
+  () => {
   const page = normalizeUcdpPage(
     { TotalCount: 1, TotalPages: 1, Result: [fixture] },
     {
