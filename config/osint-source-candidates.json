@@ -204,6 +204,54 @@
       "limits_note": "Not an unlimited free API; API usage is metered for paid plans. Entity and statements endpoints may have different billing treatment.",
       "use_note": "Analyst-initiated entity research only; never infer identity from name similarity or automatically screen people found in live observations.",
       "proposed_secret": "OPENSANCTIONS_API_KEY"
+    },
+    {
+      "id": "copernicus-ems-mapping",
+      "name": "Copernicus Emergency Management Service Mapping API",
+      "priority": "P1",
+      "status": "candidate-public-products-only",
+      "access": "public-activation-metadata-and-nonrestricted-products",
+      "domains": [
+        "emergency-mapping",
+        "retrospective-damage-context",
+        "geospatial-events"
+      ],
+      "data": [
+        "activation-metadata",
+        "areas-of-interest",
+        "delineation-products",
+        "grading-products",
+        "damage-assessments",
+        "product-download-links"
+      ],
+      "endpoint": "https://mapping.emergency.copernicus.eu/activations/api/activations/",
+      "license_note": "Public products are freely viewable/downloadable; verify activation restrictions and product-specific attribution before reuse. Some activations are sensitive/restricted.",
+      "limits_note": "No general request quota asserted; use bounded pagination and conservative caching.",
+      "use_note": "Retrospective emergency/event context only; not a military activity feed or tactical monitoring service.",
+      "proposed_secret": null
+    },
+    {
+      "id": "eumetsat-data-store",
+      "name": "EUMETSAT Data Store and EUMETView",
+      "priority": "P2",
+      "status": "candidate-registration-and-product-licence-review",
+      "access": "account-registration-and-product-specific-licensing",
+      "domains": [
+        "meteorological-satellite-imagery",
+        "environmental-context",
+        "historical-baselines"
+      ],
+      "data": [
+        "meteosat-imagery",
+        "metop-products",
+        "cloud-and-atmosphere-products",
+        "historical-archive"
+      ],
+      "endpoint": "https://user.eumetsat.int/data-access",
+      "license_note": "Check licence and redistribution terms for each product collection; preserve platform/product attribution.",
+      "limits_note": "Data Store throttling and access limits apply; published FAQ lists a maximum of 30 requests/second, 5 TB/day and 10 parallel connections.",
+      "use_note": "Meteorological/environmental context and retrospective analysis; product latency and coverage vary by collection.",
+      "proposed_secret": "EUMETSAT_ACCOUNT_CREDENTIALS"
     }
   ]
 }
