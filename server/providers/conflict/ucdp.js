@@ -43,12 +43,17 @@ function dateOnly(value) {
     return null;
   }
   const date = new Date(`${value}T00:00:00.000Z`);
-  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
+  return (
+    Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
+  )
     ? value
     : null;
 }
 
-function integer(value, { min = Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER } = {}) {
+function integer(
+  value,
+  { min = Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER } = {},
+) {
   if (value === null || value === undefined || value === '') return null;
   if (typeof value !== 'number' && typeof value !== 'string') {
     throw failure('ucdp_schema_drift');
@@ -63,7 +68,10 @@ function integer(value, { min = Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_I
   return result;
 }
 
-function numeric(value, { min = -Number.MAX_VALUE, max = Number.MAX_VALUE } = {}) {
+function numeric(
+  value,
+  { min = -Number.MAX_VALUE, max = Number.MAX_VALUE } = {},
+) {
   if (value === null || value === undefined || value === '') return null;
   if (typeof value !== 'number' && typeof value !== 'string') {
     throw failure('ucdp_schema_drift');
@@ -96,7 +104,7 @@ function parseList(value, { min, maxItems, maxValue, allowed } = {}) {
     throw failure('ucdp_invalid_filter', 400);
   }
   const values = items.map(Number);
-  if (values.some((item) => item < min || item > (allowed ? Math.max(...allowed) : max))) {
+  if (values.some((item) => item < min || item > maxValue)) {
     throw failure('ucdp_invalid_filter', 400);
   }
   if (allowed && values.some((item) => !allowed.includes(item))) {
@@ -130,7 +138,10 @@ export function buildUcdpRequest(requestUrl) {
   ) {
     throw failure('ucdp_date_range_out_of_coverage', 400);
   }
-  const days = (Date.parse(`${endDate}T00:00:00Z`) - Date.parse(`${startDate}T00:00:00Z`)) / 86_400_000;
+  const days =
+    (Date.parse(`${endDate}T00:00:00Z`) -
+      Date.parse(`${startDate}T00:00:00Z`)) /
+    86_400_000;
   if (days >= MAX_WINDOW_DAYS) {
     throw failure('ucdp_date_window_too_large', 400);
   }
@@ -217,7 +228,8 @@ export function normalizeUcdpEvent(row) {
     throw failure('ucdp_fatality_range_invalid');
   }
 
-  const activeYear = row.active_year === true || row.active_year === 1 || row.active_year === '1';
+  const activeYear =
+    row.active_year === true || row.active_year === 1 || row.active_year === '1';
   if (
     row.active_year !== true &&
     row.active_year !== false &&
@@ -449,7 +461,9 @@ export function ucdpGedProxy({
     try {
       request = buildUcdpRequest(new URL(req.url, 'http://localhost'));
     } catch (error) {
-      return send(error.status ?? 400, { error: error.code ?? 'invalid_query' });
+      return send(error.status ?? 400, {
+        error: error.code ?? 'invalid_query',
+      });
     }
     if (!rateLimit(clientKey(req))) {
       return send(429, { error: 'ucdp_local_rate_limited' }, 60);
@@ -481,8 +495,10 @@ export function ucdpGedProxy({
           totalPages: entry.totalPages,
         },
         events: entry.events,
-        interpretation:
-          'UCDP GED is a versioned dataset of organized lethal violence, not a real-time incident feed. Preserve date and location precision and the low/best/high fatality estimates; do not infer intent or current operational status.',
+        interpretation: [
+          'UCDP GED is a versioned dataset of organized lethal violence, not a real-time incident feed.',
+          'Preserve date and location precision and the low/best/high fatality estimates; do not infer intent or current operational status.',
+        ].join(' '),
         ...(entry.stale
           ? { warning: entry.error ?? 'cached_data', stale: true }
           : {}),
@@ -503,7 +519,12 @@ export function ucdpGedProxy({
           health,
         },
         retryAfterAt
-          ? Math.max(1, Math.ceil((Date.parse(retryAfterAt) - Date.parse(checkedAt)) / 1000))
+          ? Math.max(
+              1,
+              Math.ceil(
+                (Date.parse(retryAfterAt) - Date.parse(checkedAt)) / 1000,
+              ),
+            )
           : null,
       );
     }
