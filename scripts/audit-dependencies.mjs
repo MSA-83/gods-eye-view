@@ -41,7 +41,9 @@ for (const [packageName, vulnerability] of Object.entries(report.vulnerabilities
   if ((rank[vulnerability.severity] ?? 0) < rank.moderate) continue;
   const advisories = (vulnerability.via || []).filter((item) => item && typeof item === 'object');
   if (!advisories.length) {
-    blocked.push({ packageName, severity: vulnerability.severity, reason: 'No advisory metadata was returned' });
+    // npm repeats an upstream advisory's severity on dependent packages in
+    // the chain. Those entries have only string-valued `via` links; the
+    // vulnerable package itself has the advisory object and is checked below.
     continue;
   }
   for (const advisory of advisories) {
