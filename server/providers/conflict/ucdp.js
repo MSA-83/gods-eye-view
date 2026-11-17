@@ -229,7 +229,9 @@ export function normalizeUcdpEvent(row) {
   }
 
   const activeYear =
-    row.active_year === true || row.active_year === 1 || row.active_year === '1';
+    row.active_year === true ||
+    row.active_year === 1 ||
+    row.active_year === '1';
   if (
     row.active_year !== true &&
     row.active_year !== false &&
@@ -516,6 +518,11 @@ export function ucdpGedProxy({
         error.status ?? 502,
         {
           error: error.code ?? 'ucdp_unavailable',
+          ...(error.code === 'ucdp_token_required'
+            ? {
+                setup: 'Set UCDP_API_TOKEN on the server; never expose it to the browser.',
+              }
+            : {}),
           health,
         },
         retryAfterAt
