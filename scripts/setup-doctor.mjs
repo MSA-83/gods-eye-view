@@ -266,8 +266,8 @@ export function formatSetupReport(report, { readyMessage } = {}) {
     '',
     'Configured providers:',
     ...CREDENTIALS.map((spec) => {
-      const state = report.credentials[spec.name];
-      return state.configured
+      const state = report.credentials?.[spec.name];
+      return state?.configured
         ? `  [OK] ${spec.label} (${state.source})`
         : `  [--] ${spec.label}`;
     }),
