@@ -43,9 +43,8 @@ function dateOnly(value) {
     return null;
   }
   const date = new Date(`${value}T00:00:00.000Z`);
-  return (
-    Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
-  )
+  return Number.isFinite(date.getTime()) &&
+    date.toISOString().slice(0, 10) === value
     ? value
     : null;
 }
@@ -114,9 +113,10 @@ function parseList(value, { min, maxItems, maxValue, allowed } = {}) {
 }
 
 export function buildUcdpRequest(requestUrl) {
-  const url = requestUrl instanceof URL
-    ? requestUrl
-    : new URL(requestUrl, 'http://localhost');
+  const url =
+    requestUrl instanceof URL
+      ? requestUrl
+      : new URL(requestUrl, 'http://localhost');
   const allowedParams = new Set([
     'startDate',
     'endDate',
@@ -520,7 +520,8 @@ export function ucdpGedProxy({
           error: error.code ?? 'ucdp_unavailable',
           ...(error.code === 'ucdp_token_required'
             ? {
-                setup: 'Set UCDP_API_TOKEN on the server; never expose it to the browser.',
+                setup:
+                  'Set UCDP_API_TOKEN on the server; never expose it to the browser.',
               }
             : {}),
           health,
