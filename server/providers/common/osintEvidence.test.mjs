@@ -21,7 +21,8 @@ test('provenance envelope normalizes zoned timestamps and freezes the result', (
   });
   assert.equal(envelope.sourceUrl, 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json');
   assert.equal(envelope.eventTime, '2026-11-17T11:30:00.000Z');
-  assert.equal(envelope.publishedAt, checkedAt);
+  assert.equal(envelope.retrievedAt, '2026-11-17T12:00:00.000Z');
+  assert.equal(envelope.publishedAt, '2026-11-17T11:55:00.000Z');
   assert.equal(Object.isFrozen(envelope), true);
 });
 
@@ -44,11 +45,17 @@ test('provenance rejects malformed IDs, timestamps, unknown fields and unsafe UR
   for (const input of [
     { ...base, sourceId: 'NOAA SWPC' },
     { ...base, retrievedAt: '2026-11-17T12:00:00' },
+    { ...base, retrievedAt: '2026-02-30T12:00:00Z' },
+    { ...base, retrievedAt: '2026-11-17T24:00:00Z' },
+    { ...base, retrievedAt: '2026-11-17T12:00:00+14:01' },
     { ...base, eventTime: 'yesterday' },
     { ...base, unexpected: true },
     { ...base, sourceUrl: 'http://example.org/feed' },
     { ...base, sourceUrl: 'https://user:pass@example.org/feed' },
     { ...base, sourceUrl: 'https://example.org/feed?api_key=secret' },
+    { ...base, sourceUrl: 'https://example.org/feed?X-API-Key=secret' },
+    { ...base, sourceUrl: 'https://example.org/feed?client_secret=secret' },
+    { ...base, sourceUrl: 'https://example.org/feed?subscription-key=secret' },
     { ...base, rawSha256: 'not-a-hash' },
     { ...base, sourceType: 'inference' },
   ]) {
