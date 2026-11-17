@@ -393,3 +393,40 @@ The normalized event record preserves the stable UCDP `id`, the version-specific
 The UCDP Candidate Events Dataset is not included in this adapter. The current download center lists the September 2026 monthly release as 26.0.9, while the API documentation page still lists an older candidate API release. Do not silently substitute Candidate Events for GED or assume the API version is current; evaluate the published download/codebook and API release separately before adding it.
 
 **Credential follow-up:** request an API token from the UCDP API maintainer and configure `UCDP_API_TOKEN` in the server environment. The token must never be committed to the repository or added to client-side settings. Live API verification, browser/UI integration, multi-process quota accounting and Android/Termux deployment validation remain pending.
+
+## 14. Multi-hazard, active-fire and space-object metadata candidates (2026-11-17)
+
+The candidate registry now includes three additional sources. These are research candidates only; no new provider, polling job, map layer or secret has been enabled.
+
+### GDACS — Global Disaster Awareness and Coordination System
+
+- **Potential value:** GeoJSON event discovery for earthquakes, tropical cyclones, floods and other hazards; adds multi-hazard context alongside existing specialist hazard layers.
+- **Access and terms:** Public APIs are documented in the GDACS Swagger and 2025 quick-start. GDACS requests acknowledgement as “Global Disaster Awareness and Coordination System, GDACS”; review the current disclaimer and terms before reuse.
+- **Integration gate:** Pin the event-list endpoint and response schema, use bounded date windows and paging, cache conservatively, preserve event type, alert level, event/update timestamps, geometry and official event URL.
+- **Interpretation:** An alert level is a GDACS classification, not ground-truth confirmation or a universal severity scale. Keep GDACS classification separate from analyst assessment.
+- **Official references:** https://www.gdacs.org/gdacsapi/swagger/index.html and https://www.gdacs.org/Documents/2025/GDACS_API_quickstart_v2.pdf
+
+### NASA FIRMS — active-fire and thermal-anomaly detections
+
+- **Potential value:** MODIS and VIIRS satellite thermal detections, including acquisition time, sensor/platform, confidence and fire radiative power (FRP).
+- **Access and limits:** Free MAP_KEY required. FIRMS documents a limit of 5,000 transactions per 10-minute interval; large requests may consume multiple transactions. WFS/WMS layers are updated every 15 minutes, but observation-to-publication latency varies by product, sensor and region.
+- **Integration gate:** Keep the key server-side; use bounded AOI/date/sensor requests; preserve product/version, acquisition time in UTC, sensor, confidence, FRP and retrieval time. Check data availability before polling.
+- **Interpretation:** A thermal anomaly is not proof of a confirmed fire, cause or intent. MODIS numeric confidence and VIIRS categorical confidence are different scales and must not be directly compared. Distinguish NRT, RT and URT streams and their geographic coverage.
+- **Official references:** https://firms.modaps.eosdis.nasa.gov/api/ , https://firms2.modaps.eosdis.nasa.gov/content/academy/data_api/firms_api_use.html , https://firms2.modaps.eosdis.nasa.gov/mapserver/wfs-info/ , and https://firms.modaps.eosdis.nasa.gov/api/data_availability
+
+### ESA DISCOS — space-object catalogue metadata
+
+- **Potential value:** Object registration, launch-vehicle and spacecraft metadata for trackable, unclassified objects; complements dynamic public orbital data with catalogue context.
+- **Access and terms:** DISCOSweb requires account registration and acceptance of its terms. ESA requires source acknowledgement in derived works and redistributions.
+- **Integration gate:** Review the current API version, authentication, schema and terms before implementation; keep credentials server-side and pin source version/retrieval time.
+- **Interpretation:** DISCOS does not distribute surveillance-derived orbital or attitude ephemerides. Treat it as catalogue metadata, not live tracking or a replacement for orbital element sources.
+- **Official reference:** https://discosweb.esoc.esa.int/
+
+### Prioritisation
+
+1. **GDACS (P1):** strongest candidate for broad multi-hazard context, subject to a schema/terms spike and checks for overlap with existing earthquake/cyclone providers.
+2. **NASA FIRMS (P1):** useful if the existing FIRMS provider does not already cover the required sensor/product fields; prefer extending the existing provider rather than creating a duplicate.
+3. **ESA DISCOS (P2):** metadata enrichment only; lower priority until account access and API terms are confirmed.
+
+Before implementation, run a duplicate-capability review against the existing provider tree, add synthetic fixtures, document attribution and freshness, and prove that source outages cannot suppress unrelated layers. Do not enable any of these sources merely because they appear in the candidate registry.
+
