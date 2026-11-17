@@ -350,6 +350,8 @@ export function ucdpGedProxy({
     }
     if (!inFlight.has(key)) {
       const work = (async () => {
+        const token = String(getToken() ?? '').trim();
+        if (!token) throw failure('ucdp_token_required', 503);
         const currentTime = now();
         const retryAt = reserveDailyRequest(currentTime);
         if (retryAt) {
@@ -359,8 +361,6 @@ export function ucdpGedProxy({
             new Date(retryAt).toISOString(),
           );
         }
-        const token = String(getToken() ?? '').trim();
-        if (!token) throw failure('ucdp_token_required', 503);
         const response = await fetchImpl(request.upstreamUrl, {
           signal: AbortSignal.timeout(15_000),
           redirect: 'error',
@@ -450,18 +450,6 @@ export function ucdpGedProxy({
       request = buildUcdpRequest(new URL(req.url, 'http://localhost'));
     } catch (error) {
       return send(error.status ?? 400, { error: error.code ?? 'invalid_query' });
-    }
-    if (!String(getToken() ?? '').trim()) {
-      const checkedAt = new Date(now()).toISOString();
-      return send(503, {
-        error: 'ucdp_token_required',
-        setup: 'Set UCDP_API_TOKEN on the server; never expose it to the browser.',
-        health: classifySourceHealth({
-          checkedAt,
-          staleAfterMs: STALE_CACHE_MS,
-          available: false,
-        }),
-      });
     }
     if (!rateLimit(clientKey(req))) {
       return send(429, { error: 'ucdp_local_rate_limited' }, 60);
