@@ -7,11 +7,28 @@ const SOURCE_HEALTH_STATES = Object.freeze([
 ]);
 
 const ISO_WITH_ZONE =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
+  /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z|[+-](?:(?:0\d|1[0-3]):[0-5]\d|14:00))$/;
 const SOURCE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA256 = /^[a-f0-9]{64}$/;
-const SECRET_QUERY_KEY =
-  /^(?:key|api[_-]?key|token|access[_-]?token|auth(?:orization)?|password|secret)$/i;
+const SECRET_QUERY_KEYS = new Set([
+  'key',
+  'apikey',
+  'xapikey',
+  'subscriptionkey',
+  'token',
+  'accesstoken',
+  'authtoken',
+  'auth',
+  'authorization',
+  'clientsecret',
+  'secret',
+  'password',
+  'sig',
+  'signature',
+  'bearer',
+  'credential',
+  'credentials',
+]);
 const ENVELOPE_KEYS = new Set([
   'sourceId',
   'recordId',
@@ -28,9 +45,28 @@ const ENVELOPE_KEYS = new Set([
 
 function timestamp(value, field, { optional = false } = {}) {
   if (value == null && optional) return null;
+  const match = typeof value === 'string' ? ISO_WITH_ZONE.exec(value) : null;
+  const year = match ? Number(match[1]) : 0;
+  const month = match ? Number(match[2]) : 0;
+  const day = match ? Number(match[3]) : 0;
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [
+    31,
+    leapYear ? 29 : 28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+  ];
   if (
-    typeof value !== 'string' ||
-    !ISO_WITH_ZONE.test(value) ||
+    !match ||
+    day > daysInMonth[month - 1] ||
     !Number.isFinite(Date.parse(value))
   ) {
     throw new TypeError(
@@ -77,7 +113,14 @@ export function createProvenanceEnvelope(input) {
     sourceUrl.protocol !== 'https:' ||
     sourceUrl.username ||
     sourceUrl.password ||
-    [...sourceUrl.searchParams.keys()].some((key) => SECRET_QUERY_KEY.test(key))
+    [...sourceUrl.searchParams.keys()].some((key) => {
+      const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return (
+        SECRET_QUERY_KEYS.has(normalized) ||
+        normalized.endsWith('apikey') ||
+        normalized.endsWith('subscriptionkey')
+      );
+    })
   ) {
     throw new TypeError(
       'sourceUrl must not contain credentials or secret query parameters',

@@ -319,6 +319,53 @@
       "limits_note": "Annual PDF/Excel report; the 2014-2025 edition states a 3 June 2025 information cut-off and estimates for 2024/2025.",
       "use_note": "Annual aggregate trend context for NATO members, not live activity. Explicitly label estimates, reference date and methodology; compare with SIPRI only as separate series.",
       "proposed_secret": null
+    },
+    {
+      "id": "unroca",
+      "name": "United Nations Register of Conventional Arms (UNROCA)",
+      "priority": "P1",
+      "status": "candidate-public-reporting-and-coverage-gated",
+      "access": "public-government-submissions-and-annual-un-reports",
+      "domains": [
+        "arms-transfers",
+        "military-transparency",
+        "historical-baseline"
+      ],
+      "data": [
+        "annual-national-reported-imports-exports",
+        "seven-categories-major-conventional-arms",
+        "optional-small-arms-and-light-weapons",
+        "national-holdings-and-procurement-context"
+      ],
+      "endpoint": "https://www.unroca.org/",
+      "alternate_endpoint": "https://digitallibrary.un.org/",
+      "license_note": "Use publicly accessible UN Member State submissions and UN Digital Library reports with source attribution; verify reuse terms for each document and data extract.",
+      "limits_note": "Annual voluntary state reporting; coverage, completeness and reporting years vary. Some states submit nil returns; absence of a report is not evidence of no transfers. No stable public API verified.",
+      "use_note": "Country-year transparency context and reported transfers only. Distinguish actual transfers from authorizations where a state report says so. Preserve reporting state, year, nil-return status, category and source document. Not a real-time feed.",
+      "proposed_secret": null
+    },
+    {
+      "id": "un-comtrade-hs93",
+      "name": "UN Comtrade HS Chapter 93 trade statistics",
+      "priority": "P2",
+      "status": "candidate-preview-and-terms-gated",
+      "access": "keyless-public-preview-limited;free-registered-api-key-for-higher-limits",
+      "domains": [
+        "trade-statistics",
+        "arms-trade-context",
+        "historical-baseline"
+      ],
+      "data": [
+        "annual-monthly-reported-trade-flows",
+        "hs-chapter-93-arms-ammunition-parts-accessories",
+        "reporter-partner-country-series"
+      ],
+      "endpoint": "https://comtradeapi.un.org/public/v1/preview/C/A/HS",
+      "alternate_endpoint": "https://comtradeplus.un.org/en/api-docs",
+      "license_note": "UN Comtrade data use is governed by UN Comtrade fair-use policy and applicable source attribution. Free preview is public; expanded API access requires a registered account and key. Keep API keys server-side.",
+      "limits_note": "Keyless preview is limited to 500 records. Current free registered subscription advertises 500 API calls/day, 1 call/second and up to 100,000 records per call; verify current limits before implementation.",
+      "use_note": "HS Chapter 93 is a broad customs classification for arms and ammunition, not a complete inventory of military equipment or verified arms deliveries. Reported trade statistics may be delayed, revised, asymmetric or missing; do not infer operational deployment or intent.",
+      "proposed_secret": "UN_COMTRADE_API_KEY"
     }
   ]
 }
