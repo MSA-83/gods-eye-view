@@ -165,10 +165,10 @@ export function swpcProxy({ fetchImpl = (...args) => globalThis.fetch(...args), 
     };
     if (req.method !== 'GET') return send(405, { error: 'method_not_allowed' });
     if (req.url !== '/' && req.url !== '') return send(400, { error: 'invalid_query' });
-    const checkedAt = new Date(now()).toISOString();
     const results = await Promise.all(Object.keys(PRODUCTS).map(async (product) => {
       try {
         const entry = await acquire(product);
+        const checkedAt = new Date(now()).toISOString();
         return [product, {
           data: entry.rows, latest: entry.latest, retrievedAt: entry.fetchedAt,
           provenance: entry.provenance,
@@ -187,6 +187,7 @@ export function swpcProxy({ fetchImpl = (...args) => globalThis.fetch(...args), 
         }];
       }
     }));
+    const checkedAt = new Date(now()).toISOString();
     const sources = Object.fromEntries(results);
     const available = results.filter(([, value]) => value.health.status !== 'unavailable').length;
     send(available ? 200 : 503, {
