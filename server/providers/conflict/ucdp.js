@@ -81,14 +81,15 @@ function numeric(value, { min = -Number.MAX_VALUE, max = Number.MAX_VALUE } = {}
 function text(value, maxLength = 8_000) {
   if (value === null || value === undefined || value === '') return null;
   if (typeof value !== 'string') throw failure('ucdp_schema_drift');
-  return value.slice(0, maxLength);
+  if (value.length > maxLength) throw failure('ucdp_field_too_large');
+  return value;
 }
 
-function parseList(value, { min, max, allowed } = {}) {
+function parseList(value, { min, maxItems, maxValue, allowed } = {}) {
   if (!value) return null;
   const items = value.split(',').map((part) => part.trim());
   if (
-    items.length > max ||
+    items.length > maxItems ||
     items.some((part) => !/^\d+$/.test(part)) ||
     new Set(items).size !== items.length
   ) {
@@ -139,11 +140,13 @@ export function buildUcdpRequest(requestUrl) {
   if (!page) throw failure('ucdp_invalid_page', 400);
   const countries = parseList(url.searchParams.get('country'), {
     min: 1,
-    max: 8,
+    maxItems: 8,
+    maxValue: 999,
   });
   const types = parseList(url.searchParams.get('type'), {
     min: 1,
-    max: 3,
+    maxItems: 3,
+    maxValue: 3,
     allowed: [1, 2, 3],
   });
 
@@ -272,7 +275,7 @@ export function normalizeUcdpEvent(row) {
     fatalities,
     source: {
       numberOfSources: integer(row.number_of_sources, { min: -1 }),
-      articleReferences: text(row.source_article, 8_000),
+      articleReferences: text(row.source_article, 20_000),
       office: text(row.source_office, 1_000),
       date: text(row.source_date, 80),
       headline: text(row.source_headline, 4_000),
