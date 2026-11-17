@@ -282,10 +282,8 @@ export function swpcProxy({
       });
       res.end(JSON.stringify(body));
     };
-    if (req.method !== 'GET')
-      return send(405, { error: 'method_not_allowed' });
-    if (req.url !== '/' && req.url !== '')
-      return send(400, { error: 'invalid_query' });
+    if (req.method !== 'GET') return send(405, { error: 'method_not_allowed' });
+    if (req.url !== '/' && req.url !== '') return send(400, { error: 'invalid_query' });
     const results = await Promise.all(
       Object.keys(PRODUCTS).map(async (product) => {
         try {
