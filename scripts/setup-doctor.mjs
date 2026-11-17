@@ -169,7 +169,7 @@ export function buildCapabilitySummary(
   credentials,
   { openSkyAuthMode = OPENSKY_AUTH_MODE_DEFAULT, openSkyCredentialsFile = false } = {},
 ) {
-  const configured = (name) => credentials[name]?.configured === true;
+  // Partial credential maps are valid inputs for diagnostics and tests. Missing\n  // entries must stay unconfigured rather than crashing the setup doctor.\n  const configured = (name) => credentials?.[name]?.configured === true;
   const hasClientPair = configured('OPENSKY_CLIENT_ID') && configured('OPENSKY_CLIENT_SECRET');
   const hasOAuthCredentials = hasClientPair || openSkyCredentialsFile === true;
   const requestedOpenSkyMode = String(openSkyAuthMode || '').trim().toLowerCase();
