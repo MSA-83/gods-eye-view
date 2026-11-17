@@ -13,24 +13,47 @@
   ],
   "sources": [
     {
-      "id": "acled",
-      "name": "ACLED",
-      "priority": "P2",
-      "status": "access-and-licence-review-required",
-      "access": "myacled-account-oauth",
+      "id": "noaa-swpc",
+      "name": "NOAA Space Weather Prediction Center",
+      "priority": "P0",
+      "status": "candidate",
+      "access": "public-keyless-json",
       "domains": [
-        "political-violence-events",
-        "conflict-context"
+        "space-weather",
+        "gnss-context"
       ],
       "data": [
-        "event-records",
-        "actor-and-event-categories"
+        "alerts",
+        "planetary-k-index",
+        "solar-flares",
+        "solar-wind"
       ],
-      "endpoint": "https://acleddata.com/api-documentation/getting-started",
-      "license_note": "Confirm current user eligibility, API plan, redistribution and commercial terms before implementation.",
-      "limits_note": "No free quota asserted here.",
-      "use_note": "Cross-check event reporting; keep ACLED classifications separate from analyst conclusions.",
-      "proposed_secret": "ACLED_OAUTH_CREDENTIALS"
+      "endpoint": "https://services.swpc.noaa.gov/products/",
+      "license_note": "Review NOAA/NWS data notices; preserve attribution and disclaimer.",
+      "limits_note": "No fixed quota verified in this registry; use conservative caching.",
+      "use_note": "Contextual GNSS quality correlation only; not evidence of intentional interference.",
+      "proposed_secret": null
+    },
+    {
+      "id": "ucdp-ged",
+      "name": "Uppsala Conflict Data Program Georeferenced Event Dataset",
+      "priority": "P0",
+      "status": "candidate",
+      "access": "free-download-cc-by-4.0;api-token-request",
+      "domains": [
+        "conflict-events",
+        "historical-baseline"
+      ],
+      "data": [
+        "georeferenced-organized-violence-events",
+        "yearly-conflict-series"
+      ],
+      "endpoint": "https://ucdp.uu.se/apidocs/",
+      "license": "CC-BY-4.0",
+      "limits_note": "API quota documented as 5,000 requests/day; token requested from maintainer. Downloads are free.",
+      "use_note": "Versioned historical/event context; show codebook definitions and publication lag.",
+      "proposed_secret": "UCDP_API_TOKEN",
+      "license_note": "CC BY 4.0 for the GED download; retain UCDP attribution and cite the dataset version/codebook. Confirm API-specific terms separately."
     },
     {
       "id": "copernicus-dataspace-stac",
@@ -53,6 +76,134 @@
       "limits_note": "Published free-tier quotas vary by API; consult live quota documentation.",
       "use_note": "Metadata discovery first; user-requested retrospective comparisons, not real-time tactical monitoring.",
       "proposed_secret": "COPERNICUS_OAUTH_CLIENT_CREDENTIALS"
+    },
+    {
+      "id": "openaq-v3",
+      "name": "OpenAQ API v3",
+      "priority": "P1",
+      "status": "candidate",
+      "access": "free-api-key",
+      "domains": [
+        "air-quality",
+        "environmental-context"
+      ],
+      "data": [
+        "station-metadata",
+        "sensor-measurements"
+      ],
+      "endpoint": "https://api.openaq.org/v3/",
+      "license_note": "OpenAQ attribution required; check each underlying provider's licence and terms.",
+      "limits_note": "Free general-use key: 60 requests/minute and 2,000 requests/hour.",
+      "use_note": "Environmental context only; air-quality readings do not attribute cause.",
+      "proposed_secret": "OPENAQ_API_KEY"
+    },
+    {
+      "id": "global-fishing-watch",
+      "name": "Global Fishing Watch APIs",
+      "priority": "P1",
+      "status": "candidate-terms-gated",
+      "access": "free-api-token-noncommercial",
+      "domains": [
+        "maritime-context",
+        "aggregate-vessel-activity"
+      ],
+      "data": [
+        "fishing-activity",
+        "encounters",
+        "ais-gap-indicators",
+        "vessel-identity-context"
+      ],
+      "endpoint": "https://api-doc.globalfishingwatch.org/",
+      "license": "CC-BY-NC-4.0",
+      "limits_note": "Terms currently state up to 50,000 requests/day and 1,500,000/month.",
+      "use_note": "Non-commercial only; use retrospective/aggregated context. Not comprehensive vessel coverage and not a military-vessel tracker.",
+      "proposed_secret": "GFW_API_TOKEN"
+    },
+    {
+      "id": "acled",
+      "name": "ACLED",
+      "priority": "P2",
+      "status": "access-and-licence-review-required",
+      "access": "myacled-account-oauth",
+      "domains": [
+        "political-violence-events",
+        "conflict-context"
+      ],
+      "data": [
+        "event-records",
+        "actor-and-event-categories"
+      ],
+      "endpoint": "https://acleddata.com/api-documentation/getting-started",
+      "license_note": "Confirm current user eligibility, API plan, redistribution and commercial terms before implementation.",
+      "limits_note": "No free quota asserted here.",
+      "use_note": "Cross-check event reporting; keep ACLED classifications separate from analyst conclusions.",
+      "proposed_secret": "ACLED_OAUTH_CREDENTIALS"
+    },
+    {
+      "id": "reliefweb",
+      "name": "ReliefWeb API",
+      "priority": "P2",
+      "status": "appname-approval-required",
+      "access": "approved-appname",
+      "domains": [
+        "humanitarian-context",
+        "conflict-reporting"
+      ],
+      "data": [
+        "humanitarian-reports",
+        "disaster-reports",
+        "situation-updates"
+      ],
+      "endpoint": "https://apidoc.reliefweb.int/",
+      "license_note": "Respect API terms and the rights of original report publishers.",
+      "limits_note": "Approved appname required; confirm current usage limits.",
+      "use_note": "Humanitarian context and retrospective reporting, not a live sensor feed.",
+      "proposed_secret": "RELIEFWEB_APPNAME"
+    },
+    {
+      "id": "global-energy-monitor",
+      "name": "Global Energy Monitor open datasets",
+      "priority": "P2",
+      "status": "candidate-dataset-license-review",
+      "access": "public-download",
+      "domains": [
+        "energy-infrastructure",
+        "strategic-context",
+        "historical-baseline"
+      ],
+      "data": [
+        "power-plants",
+        "coal-infrastructure",
+        "oil-gas-infrastructure",
+        "steel-and-cement-infrastructure"
+      ],
+      "endpoint": "https://globalenergymonitor.org/download-data/",
+      "license_note": "Review the licence and attribution for each dataset individually before bundling or redistributing; do not assume one licence covers all datasets.",
+      "limits_note": "Download-based datasets; no live API or polling quota asserted.",
+      "use_note": "Static/periodic infrastructure baseline and retrospective context only; not evidence of current operational activity.",
+      "proposed_secret": null
+    },
+    {
+      "id": "opensanctions",
+      "name": "OpenSanctions",
+      "priority": "P2",
+      "status": "access-and-terms-gated",
+      "access": "api-key-public-interest-eligibility-or-paid-metered-api",
+      "domains": [
+        "entity-resolution",
+        "sanctions-context",
+        "organization-context"
+      ],
+      "data": [
+        "sanctions-designations",
+        "pep-records",
+        "entity-relationships"
+      ],
+      "endpoint": "https://api.opensanctions.org/",
+      "license_note": "Hosted API terms and underlying dataset rights apply; confirm public-interest eligibility and current terms before use.",
+      "limits_note": "Not an unlimited free API; API usage is metered for paid plans. Entity and statements endpoints may have different billing treatment.",
+      "use_note": "Analyst-initiated entity research only; never infer identity from name similarity or automatically screen people found in live observations.",
+      "proposed_secret": "OPENSANCTIONS_API_KEY"
     },
     {
       "id": "copernicus-ems-mapping",
@@ -80,29 +231,6 @@
       "proposed_secret": null
     },
     {
-      "id": "eda-defence-data",
-      "name": "European Defence Agency Defence Data",
-      "priority": "P1",
-      "status": "candidate-methodology-and-terms-review",
-      "access": "public-annual-datasets-and-portal",
-      "domains": [
-        "military-expenditure",
-        "force-structure-context",
-        "european-defence-trends"
-      ],
-      "data": [
-        "annual-defence-expenditure",
-        "investment-and-equipment-spending",
-        "defence-expenditure-share-of-gdp",
-        "selected-personnel-and-force-indicators"
-      ],
-      "endpoint": "https://www.eda.europa.eu/publications-and-data/defence-data",
-      "license_note": "Review reuse terms for each annual report and downloadable table; preserve EDA attribution. Keep EDA's member-state definitions separate from SIPRI and NATO series.",
-      "limits_note": "Annual data collected and compiled by EDA since 2006, with some indicators since 2005. Dataset years and indicator availability vary.",
-      "use_note": "Historical and annual European defence trend context only. Not a live activity feed. Do not combine series without documenting coverage, definitions, currency, fiscal-year and estimate differences.",
-      "proposed_secret": null
-    },
-    {
       "id": "eumetsat-data-store",
       "name": "EUMETSAT Data Store and EUMETView",
       "priority": "P2",
@@ -124,180 +252,6 @@
       "limits_note": "Data Store throttling and access limits apply; published FAQ lists a maximum of 30 requests/second, 5 TB/day and 10 parallel connections.",
       "use_note": "Meteorological/environmental context and retrospective analysis; product latency and coverage vary by collection.",
       "proposed_secret": "EUMETSAT_ACCOUNT_CREDENTIALS"
-    },
-    {
-      "id": "global-energy-monitor",
-      "name": "Global Energy Monitor open datasets",
-      "priority": "P2",
-      "status": "candidate-dataset-license-review",
-      "access": "public-download",
-      "domains": [
-        "energy-infrastructure",
-        "strategic-context",
-        "historical-baseline"
-      ],
-      "data": [
-        "power-plants",
-        "coal-infrastructure",
-        "oil-gas-infrastructure",
-        "steel-and-cement-infrastructure"
-      ],
-      "endpoint": "https://globalenergymonitor.org/download-data/",
-      "license_note": "Review the licence and attribution for each dataset individually before bundling or redistributing; do not assume one licence covers all datasets.",
-      "limits_note": "Download-based datasets; no live API or polling quota asserted.",
-      "use_note": "Static/periodic infrastructure baseline and retrospective context only; not evidence of current operational activity.",
-      "proposed_secret": null
-    },
-    {
-      "id": "global-fishing-watch",
-      "name": "Global Fishing Watch APIs",
-      "priority": "P1",
-      "status": "candidate-terms-gated",
-      "access": "free-api-token-noncommercial",
-      "domains": [
-        "maritime-context",
-        "aggregate-vessel-activity"
-      ],
-      "data": [
-        "fishing-activity",
-        "encounters",
-        "ais-gap-indicators",
-        "vessel-identity-context"
-      ],
-      "endpoint": "https://api-doc.globalfishingwatch.org/",
-      "license": "CC-BY-NC-4.0",
-      "limits_note": "Terms currently state up to 50,000 requests/day and 1,500,000/month.",
-      "use_note": "Non-commercial only; use retrospective/aggregated context. Not comprehensive vessel coverage and not a military-vessel tracker.",
-      "proposed_secret": "GFW_API_TOKEN"
-    },
-    {
-      "id": "nato-defence-expenditure",
-      "name": "NATO Defence Expenditure Reports",
-      "priority": "P2",
-      "status": "candidate-public-report-and-methodology-review",
-      "access": "public-reports-and-xlsx-downloads",
-      "domains": [
-        "military-expenditure",
-        "alliance-trends",
-        "historical-baseline"
-      ],
-      "data": [
-        "annual-national-defence-expenditure",
-        "expenditure-share-of-gdp",
-        "equipment-personnel-breakdowns"
-      ],
-      "endpoint": "https://www.nato.int/en/news-and-events/articles/news/2025/08/28/defence-expenditure-of-nato-countries-2014-2025",
-      "license_note": "Review NATO publication and table reuse terms; preserve attribution. Figures use NATO's agreed definition and should not be silently merged with SIPRI estimates.",
-      "limits_note": "Annual PDF/Excel report; the 2014-2025 edition states a 3 June 2025 information cut-off and estimates for 2024/2025.",
-      "use_note": "Annual aggregate trend context for NATO members, not live activity. Explicitly label estimates, reference date and methodology; compare with SIPRI only as separate series.",
-      "proposed_secret": null
-    },
-    {
-      "id": "noaa-swpc",
-      "name": "NOAA Space Weather Prediction Center",
-      "priority": "P0",
-      "status": "candidate",
-      "access": "public-keyless-json",
-      "domains": [
-        "space-weather",
-        "gnss-context"
-      ],
-      "data": [
-        "alerts",
-        "planetary-k-index",
-        "solar-flares",
-        "solar-wind"
-      ],
-      "endpoint": "https://services.swpc.noaa.gov/products/",
-      "license_note": "Review NOAA/NWS data notices; preserve attribution and disclaimer.",
-      "limits_note": "No fixed quota verified in this registry; use conservative caching.",
-      "use_note": "Contextual GNSS quality correlation only; not evidence of intentional interference.",
-      "proposed_secret": null
-    },
-    {
-      "id": "openaq-v3",
-      "name": "OpenAQ API v3",
-      "priority": "P1",
-      "status": "candidate",
-      "access": "free-api-key",
-      "domains": [
-        "air-quality",
-        "environmental-context"
-      ],
-      "data": [
-        "station-metadata",
-        "sensor-measurements"
-      ],
-      "endpoint": "https://api.openaq.org/v3/",
-      "license_note": "OpenAQ attribution required; check each underlying provider's licence and terms.",
-      "limits_note": "Free general-use key: 60 requests/minute and 2,000 requests/hour.",
-      "use_note": "Environmental context only; air-quality readings do not attribute cause.",
-      "proposed_secret": "OPENAQ_API_KEY"
-    },
-    {
-      "id": "opensanctions",
-      "name": "OpenSanctions",
-      "priority": "P2",
-      "status": "access-and-terms-gated",
-      "access": "api-key-public-interest-eligibility-or-paid-metered-api",
-      "domains": [
-        "entity-resolution",
-        "sanctions-context",
-        "organization-context"
-      ],
-      "data": [
-        "sanctions-designations",
-        "pep-records",
-        "entity-relationships"
-      ],
-      "endpoint": "https://api.opensanctions.org/",
-      "license_note": "Hosted API terms and underlying dataset rights apply; confirm public-interest eligibility and current terms before use.",
-      "limits_note": "Not an unlimited free API; API usage is metered for paid plans. Entity and statements endpoints may have different billing treatment.",
-      "use_note": "Analyst-initiated entity research only; never infer identity from name similarity or automatically screen people found in live observations.",
-      "proposed_secret": "OPENSANCTIONS_API_KEY"
-    },
-    {
-      "id": "reliefweb",
-      "name": "ReliefWeb API",
-      "priority": "P2",
-      "status": "appname-approval-required",
-      "access": "approved-appname",
-      "domains": [
-        "humanitarian-context",
-        "conflict-reporting"
-      ],
-      "data": [
-        "humanitarian-reports",
-        "disaster-reports",
-        "situation-updates"
-      ],
-      "endpoint": "https://apidoc.reliefweb.int/",
-      "license_note": "Respect API terms and the rights of original report publishers.",
-      "limits_note": "Approved appname required; confirm current usage limits.",
-      "use_note": "Humanitarian context and retrospective reporting, not a live sensor feed.",
-      "proposed_secret": "RELIEFWEB_APPNAME"
-    },
-    {
-      "id": "sipri-arms-transfers",
-      "name": "SIPRI Arms Transfers Database",
-      "priority": "P1",
-      "status": "candidate-noncommercial-and-fair-use-gated",
-      "access": "public-database-csv-export",
-      "domains": [
-        "arms-transfers",
-        "strategic-trends",
-        "historical-baseline"
-      ],
-      "data": [
-        "major-conventional-arms-deliveries",
-        "supplier-recipient-series",
-        "trend-indicator-values"
-      ],
-      "endpoint": "https://www.sipri.org/databases/armstransfers",
-      "license_note": "SIPRI retains copyright; use must be non-commercial and within its fair-use policy unless separately licensed. Attribute SIPRI and review terms before redistribution.",
-      "limits_note": "Public database supports CSV export; updated annually. Pin the dataset release and query/export parameters.",
-      "use_note": "Historical, country-level and multi-year transfer trends only. SIPRI TIV measures volume of military resources, not financial value or exact deal price; do not infer current deployment or operational intent.",
-      "proposed_secret": null
     },
     {
       "id": "sipri-milex",
@@ -323,48 +277,72 @@
       "proposed_secret": null
     },
     {
-      "id": "sipri-national-budget-archive",
-      "name": "SIPRI National Budget Archive",
-      "priority": "P2",
-      "status": "candidate-documentary-source-review",
-      "access": "public-document-links-and-archive",
+      "id": "sipri-arms-transfers",
+      "name": "SIPRI Arms Transfers Database",
+      "priority": "P1",
+      "status": "candidate-noncommercial-and-fair-use-gated",
+      "access": "public-database-csv-export",
       "domains": [
-        "military-expenditure",
-        "primary-source-documents",
-        "claim-verification"
-      ],
-      "data": [
-        "national-budget-documents",
-        "defence-white-papers",
-        "budget-bills",
-        "official-statistical-releases"
-      ],
-      "endpoint": "https://www.sipri.org/databases/national-budget-archive",
-      "license_note": "Archive links to government and institutional documents; assess reuse rights at the original publisher for each document. Cite SIPRI's archive as discovery provenance and the original publisher as the document source.",
-      "limits_note": "Documents available depend on country and year; the archive is updated annually from 2021 data onwards. Links and availability may change.",
-      "use_note": "Use to trace and audit the primary documents underlying military-expenditure estimates. This is documentary evidence, not a standardized expenditure time series and not independent of SIPRI when the document is already a SIPRI input.",
-      "proposed_secret": null
-    },
-    {
-      "id": "ucdp-ged",
-      "name": "Uppsala Conflict Data Program Georeferenced Event Dataset",
-      "priority": "P0",
-      "status": "candidate",
-      "access": "free-download-cc-by-4.0;api-token-request",
-      "domains": [
-        "conflict-events",
+        "arms-transfers",
+        "strategic-trends",
         "historical-baseline"
       ],
       "data": [
-        "georeferenced-organized-violence-events",
-        "yearly-conflict-series"
+        "major-conventional-arms-deliveries",
+        "supplier-recipient-series",
+        "trend-indicator-values"
       ],
-      "endpoint": "https://ucdp.uu.se/apidocs/",
-      "license": "CC-BY-4.0",
-      "limits_note": "API quota documented as 5,000 requests/day; token requested from maintainer. Downloads are free.",
-      "use_note": "Versioned historical/event context; show codebook definitions and publication lag.",
-      "proposed_secret": "UCDP_API_TOKEN",
-      "license_note": "CC BY 4.0 for the GED download; retain UCDP attribution and cite the dataset version/codebook. Confirm API-specific terms separately."
+      "endpoint": "https://www.sipri.org/databases/armstransfers",
+      "license_note": "SIPRI retains copyright; use must be non-commercial and within its fair-use policy unless separately licensed. Attribute SIPRI and review terms before redistribution.",
+      "limits_note": "Public database supports CSV export; updated annually. Pin the dataset release and query/export parameters.",
+      "use_note": "Historical, country-level and multi-year transfer trends only. SIPRI TIV measures volume of military resources, not financial value or exact deal price; do not infer current deployment or operational intent.",
+      "proposed_secret": null
+    },
+    {
+      "id": "nato-defence-expenditure",
+      "name": "NATO Defence Expenditure Reports",
+      "priority": "P2",
+      "status": "candidate-public-report-and-methodology-review",
+      "access": "public-reports-and-xlsx-downloads",
+      "domains": [
+        "military-expenditure",
+        "alliance-trends",
+        "historical-baseline"
+      ],
+      "data": [
+        "annual-national-defence-expenditure",
+        "expenditure-share-of-gdp",
+        "equipment-personnel-breakdowns"
+      ],
+      "endpoint": "https://www.nato.int/en/news-and-events/articles/news/2025/08/28/defence-expenditure-of-nato-countries-2014-2025",
+      "license_note": "Review NATO publication and table reuse terms; preserve attribution. Figures use NATO's agreed definition and should not be silently merged with SIPRI estimates.",
+      "limits_note": "Annual PDF/Excel report; the 2014-2025 edition states a 3 June 2025 information cut-off and estimates for 2024/2025.",
+      "use_note": "Annual aggregate trend context for NATO members, not live activity. Explicitly label estimates, reference date and methodology; compare with SIPRI only as separate series.",
+      "proposed_secret": null
+    },
+    {
+      "id": "unroca",
+      "name": "United Nations Register of Conventional Arms (UNROCA)",
+      "priority": "P1",
+      "status": "candidate-public-reporting-and-coverage-gated",
+      "access": "public-government-submissions-and-annual-un-reports",
+      "domains": [
+        "arms-transfers",
+        "military-transparency",
+        "historical-baseline"
+      ],
+      "data": [
+        "annual-national-reported-imports-exports",
+        "seven-categories-major-conventional-arms",
+        "optional-small-arms-and-light-weapons",
+        "national-holdings-and-procurement-context"
+      ],
+      "endpoint": "https://www.unroca.org/",
+      "alternate_endpoint": "https://digitallibrary.un.org/",
+      "license_note": "Use publicly accessible UN Member State submissions and UN Digital Library reports with source attribution; verify reuse terms for each document and data extract.",
+      "limits_note": "Annual voluntary state reporting; coverage, completeness and reporting years vary. Some states submit nil returns; absence of a report is not evidence of no transfers. No stable public API verified.",
+      "use_note": "Country-year transparency context and reported transfers only. Distinguish actual transfers from authorizations where a state report says so. Preserve reporting state, year, nil-return status, category and source document. Not a real-time feed.",
+      "proposed_secret": null
     },
     {
       "id": "un-comtrade-hs93",
@@ -390,27 +368,49 @@
       "proposed_secret": "UN_COMTRADE_API_KEY"
     },
     {
-      "id": "unroca",
-      "name": "United Nations Register of Conventional Arms (UNROCA)",
+      "id": "eda-defence-data",
+      "name": "European Defence Agency Defence Data",
       "priority": "P1",
-      "status": "candidate-public-reporting-and-coverage-gated",
-      "access": "public-government-submissions-and-annual-un-reports",
+      "status": "candidate-methodology-and-terms-review",
+      "access": "public-annual-datasets-and-portal",
       "domains": [
-        "arms-transfers",
-        "military-transparency",
-        "historical-baseline"
+        "military-expenditure",
+        "force-structure-context",
+        "european-defence-trends"
       ],
       "data": [
-        "annual-national-reported-imports-exports",
-        "seven-categories-major-conventional-arms",
-        "optional-small-arms-and-light-weapons",
-        "national-holdings-and-procurement-context"
+        "annual-defence-expenditure",
+        "investment-and-equipment-spending",
+        "defence-expenditure-share-of-gdp",
+        "selected-personnel-and-force-indicators"
       ],
-      "endpoint": "https://www.unroca.org/",
-      "alternate_endpoint": "https://digitallibrary.un.org/",
-      "license_note": "Use publicly accessible UN Member State submissions and UN Digital Library reports with source attribution; verify reuse terms for each document and data extract.",
-      "limits_note": "Annual voluntary state reporting; coverage, completeness and reporting years vary. Some states submit nil returns; absence of a report is not evidence of no transfers. No stable public API verified.",
-      "use_note": "Country-year transparency context and reported transfers only. Distinguish actual transfers from authorizations where a state report says so. Preserve reporting state, year, nil-return status, category and source document. Not a real-time feed.",
+      "endpoint": "https://www.eda.europa.eu/publications-and-data/defence-data",
+      "license_note": "Review reuse terms for each annual report and downloadable table; preserve EDA attribution. Keep EDA's member-state definitions separate from SIPRI and NATO series.",
+      "limits_note": "Annual data collected and compiled by EDA since 2006, with some indicators since 2005. Dataset years and indicator availability vary.",
+      "use_note": "Historical and annual European defence trend context only. Not a live activity feed. Do not combine series without documenting coverage, definitions, currency, fiscal-year and estimate differences.",
+      "proposed_secret": null
+    },
+    {
+      "id": "sipri-national-budget-archive",
+      "name": "SIPRI National Budget Archive",
+      "priority": "P2",
+      "status": "candidate-documentary-source-review",
+      "access": "public-document-links-and-archive",
+      "domains": [
+        "military-expenditure",
+        "primary-source-documents",
+        "claim-verification"
+      ],
+      "data": [
+        "national-budget-documents",
+        "defence-white-papers",
+        "budget-bills",
+        "official-statistical-releases"
+      ],
+      "endpoint": "https://www.sipri.org/databases/national-budget-archive",
+      "license_note": "Archive links to government and institutional documents; assess reuse rights at the original publisher for each document. Cite SIPRI's archive as discovery provenance and the original publisher as the document source.",
+      "limits_note": "Documents available depend on country and year; the archive is updated annually from 2021 data onwards. Links and availability may change.",
+      "use_note": "Use to trace and audit the primary documents underlying military-expenditure estimates. This is documentary evidence, not a standardized expenditure time series and not independent of SIPRI when the document is already a SIPRI input.",
       "proposed_secret": null
     }
   ]
