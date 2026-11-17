@@ -252,6 +252,73 @@
       "limits_note": "Data Store throttling and access limits apply; published FAQ lists a maximum of 30 requests/second, 5 TB/day and 10 parallel connections.",
       "use_note": "Meteorological/environmental context and retrospective analysis; product latency and coverage vary by collection.",
       "proposed_secret": "EUMETSAT_ACCOUNT_CREDENTIALS"
+    },
+    {
+      "id": "sipri-milex",
+      "name": "SIPRI Military Expenditure Database (with World Bank WDI access path)",
+      "priority": "P1",
+      "status": "candidate-terms-and-attribution-gated",
+      "access": "public-download;world-bank-indicators-api-keyless",
+      "domains": [
+        "military-expenditure",
+        "strategic-trends",
+        "historical-baseline"
+      ],
+      "data": [
+        "annual-national-military-expenditure",
+        "military-expenditure-share-of-gdp",
+        "per-capita-series"
+      ],
+      "endpoint": "https://www.sipri.org/databases/milex",
+      "alternate_endpoint": "https://api.worldbank.org/v2/country/all/indicator/MS.MIL.XPND.GD.ZS?format=json&per_page=20000",
+      "license_note": "SIPRI data may be freely downloaded and cited for statistical/analytical use under its fair-use policy; reproduction and commercial use are restricted and may require permission. World Bank API delivery does not remove SIPRI's underlying terms. Attribute SIPRI.",
+      "limits_note": "Annual downloadable workbook; World Bank Indicators API v2 is keyless and paginated. Pin the exact workbook revision and API retrieval date.",
+      "use_note": "Annual country-level strategic trend context only. The World Bank indicator is derived from SIPRI and is not an independent corroborating source. Expenditure is an input measure, not a direct measure of capability or operational activity.",
+      "proposed_secret": null
+    },
+    {
+      "id": "sipri-arms-transfers",
+      "name": "SIPRI Arms Transfers Database",
+      "priority": "P1",
+      "status": "candidate-noncommercial-and-fair-use-gated",
+      "access": "public-database-csv-export",
+      "domains": [
+        "arms-transfers",
+        "strategic-trends",
+        "historical-baseline"
+      ],
+      "data": [
+        "major-conventional-arms-deliveries",
+        "supplier-recipient-series",
+        "trend-indicator-values"
+      ],
+      "endpoint": "https://www.sipri.org/databases/armstransfers",
+      "license_note": "SIPRI retains copyright; use must be non-commercial and within its fair-use policy unless separately licensed. Attribute SIPRI and review terms before redistribution.",
+      "limits_note": "Public database supports CSV export; updated annually. Pin the dataset release and query/export parameters.",
+      "use_note": "Historical, country-level and multi-year transfer trends only. SIPRI TIV measures volume of military resources, not financial value or exact deal price; do not infer current deployment or operational intent.",
+      "proposed_secret": null
+    },
+    {
+      "id": "nato-defence-expenditure",
+      "name": "NATO Defence Expenditure Reports",
+      "priority": "P2",
+      "status": "candidate-public-report-and-methodology-review",
+      "access": "public-reports-and-xlsx-downloads",
+      "domains": [
+        "military-expenditure",
+        "alliance-trends",
+        "historical-baseline"
+      ],
+      "data": [
+        "annual-national-defence-expenditure",
+        "expenditure-share-of-gdp",
+        "equipment-personnel-breakdowns"
+      ],
+      "endpoint": "https://www.nato.int/en/news-and-events/articles/news/2025/08/28/defence-expenditure-of-nato-countries-2014-2025",
+      "license_note": "Review NATO publication and table reuse terms; preserve attribution. Figures use NATO's agreed definition and should not be silently merged with SIPRI estimates.",
+      "limits_note": "Annual PDF/Excel report; the 2014-2025 edition states a 3 June 2025 information cut-off and estimates for 2024/2025.",
+      "use_note": "Annual aggregate trend context for NATO members, not live activity. Explicitly label estimates, reference date and methodology; compare with SIPRI only as separate series.",
+      "proposed_secret": null
     }
   ]
 }
