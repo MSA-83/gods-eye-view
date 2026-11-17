@@ -190,3 +190,33 @@ The following are implementation tasks, not completed runtime integrations:
 | GEV-OSINT-08 | Evaluate Global Fishing Watch aggregated historical maritime context | P2 | Non-commercial terms gate; no individual-vessel operational tracking or tactical use |
 
 No item above is marked implemented by this documentation change. The next code change should be the P0 provenance/source-health contract and SWPC adapter, not a new standalone map layer. Reuse existing layer and server-provider seams, keep secrets server-side, and add synthetic tests before any live provider is enabled.
+
+
+## 12. Further public-source audit (2026-11-17)
+
+This follow-up adds two public Copernicus services discovered during a fresh source review. They complement Sentinel discovery and existing FIRMS/GDACS layers without duplicating those feeds.
+
+### Copernicus Emergency Management Service (CEMS) Mapping API
+
+- **Access:** Public activation metadata and non-restricted products are freely viewable/downloadable. The mapping API exposes activation metadata, AOIs, product links and GIS service endpoints.
+- **Useful data:** Event footprints, delineation/grading products, post-event damage assessments and retrospective reference products.
+- **Integration:** Add metadata discovery first; cache activation pages, preserve activation code and product version, and link to the official product rather than bulk-mirroring large rasters. Use only public/non-restricted activations.
+- **Caveat:** CEMS is an emergency mapping service, not a military activity feed. It can provide independent geospatial context for reported industrial accidents, wildfires, storms, floods and humanitarian emergencies. Some activations are sensitive/restricted.
+- **Official docs:** https://mapping.emergency.copernicus.eu/about/how-to-harvest-cems-mapping-data/ and https://documentation.dataspace.copernicus.eu/Data/CEMS.html
+
+### EUMETSAT Data Store / EUMETView
+
+- **Access:** Account registration and product-specific licensing may apply. The Data Store supports API-based discovery and downloads; EUMETView exposes imagery and OGC services.
+- **Useful data:** Meteosat and Metop imagery and products for cloud, atmospheric, ocean and environmental context; near-real-time and historical modes.
+- **Integration:** Treat as a metadata/catalog provider first. Record platform, instrument, product collection, sensing time, processing level, footprint and licence. Avoid downloading large scenes automatically.
+- **Caveat:** Smartphone access to the Data Store UI is not natively supported; API/CLI access may still be practical from a server. Product availability and latency differ by collection.
+- **Official docs:** https://user.eumetsat.int/data-access and https://user.eumetsat.int/resources/user-guides/frequently-asked-questions-for-data-store
+
+### Source-contract corrections
+
+- Global Fishing Watch registration is not an unrestricted anonymous free tier. Its terms require a qualifying organisation application and non-commercial use; request limits are shared across tokens at 50,000/day and 1,500,000/month. Do not enable it until organisational eligibility and the project's non-commercial status are confirmed.
+- NOAA SWPC changed multiple JSON product schemas effective 31 March 2026 and deprecated several RTSW products from 30 April 2026. Adapter fixtures must use the post-change formats; do not implement against old key/value-array samples or deprecated endpoints. See https://www.weather.gov/media/notification/pdf_2026/scn26-21_Data_Format_Changes_Impacting_SWPC_Products.pdf.
+- UCDP currently publishes GED 26.1 downloads under CC BY 4.0 with codebooks and version history. Use the download release as the initial reproducible path; confirm API version and access requirements independently. See https://ucdp.uu.se/downloads/ and https://ucdp.uu.se/apidocs/.
+- OpenAQ's published general-use limit is 60 requests/minute and 2,000/hour; key is supplied in the `X-API-Key` header. Never place it in a browser request. See https://docs.openaq.org/using-the-api/rate-limits and https://docs.openaq.org/using-the-api/api-key.
+
+These additions remain research candidates. No CEMS, EUMETSAT, SWPC, OpenAQ, or UCDP runtime adapter is claimed by this documentation change.
