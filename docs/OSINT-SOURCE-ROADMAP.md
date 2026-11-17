@@ -180,16 +180,16 @@ The following are implementation tasks, not completed runtime integrations:
 
 | ID | Work | Priority | Acceptance gate |
 | --- | --- | --- | --- |
-| GEV-OSINT-01 | Add provider-neutral provenance envelope and source-health status contract | P0 | **Foundation helper and unit tests added in branch**; provider adoption, UI health display and end-to-end integration remain pending |
-| GEV-OSINT-02 | Add NOAA SWPC context provider through server-side proxy | P0 | Pinned JSON fixtures, schema drift tests, no client secret, clear observation/forecast labels |
-| GEV-OSINT-03 | Add OpenAQ as an additive provider to the existing air-quality source | P1 | Existing ECCC behavior unchanged; key remains server-side; provider attribution and sensor licence surfaced |
-| GEV-OSINT-04 | Import versioned UCDP GED snapshots with checksums and codebook metadata | P1 | Reproducible import, source version recorded, duplicate/event-time tests, CC BY attribution |
+| GEV-OSINT-01 | Add provider-neutral provenance envelope and source-health status contract | P0 | **Implemented foundation:** `server/providers/common/osintEvidence.js` validates provenance envelopes and classifies freshness/availability; adopted by SWPC and UCDP adapters. UI-wide adoption remains pending |
+| GEV-OSINT-02 | Add NOAA SWPC context provider through server-side proxy | P0 | **Implemented:** `server/providers/space/swpc.js`, registered in `server/providers/local.js`; read-only `/api/space-weather`, bounded JSON, schema validation, cache/stale fallback, provenance and health; fixture tests cover current and legacy product shapes |
+| GEV-OSINT-03 | Add OpenAQ as an additive provider to the existing air-quality source | P1 | Pending; existing ECCC behavior must remain unchanged; key stays server-side; provider attribution and sensor licence surfaced |
+| GEV-OSINT-04 | Import versioned UCDP GED snapshots with checksums and codebook metadata | P1 | **Partially implemented:** version-pinned GED 26.1 API proxy at `/api/conflict-events/ucdp`, token server-side, 31-day windows, page cap, cache/stale fallback, daily request budget, provenance and health. Reproducible snapshot importer, checksums and codebook bundle remain pending |
 | GEV-OSINT-05 | Add Copernicus STAC metadata discovery | P1 | OAuth kept server-side; bounded paging; metadata-only default; no automatic full-scene downloads |
 | GEV-OSINT-06 | Evaluate GEM static infrastructure packs | P2 | Dataset-by-dataset licence review; version, download date, checksum and attribution |
 | GEV-OSINT-07 | Evaluate OpenSanctions deliberate lookup workflow | P2 | Confirm public-interest eligibility and API terms; explicit user action; entity match score and false-positive caveat |
 | GEV-OSINT-08 | Evaluate Global Fishing Watch aggregated historical maritime context | P2 | Non-commercial terms gate; no individual-vessel operational tracking or tactical use |
 
-The provenance/source-health foundation is implemented in the current feature branch, but no provider adapter is enabled by that helper alone. The next runtime milestone is the P0 NOAA SWPC context adapter, followed by versioned UCDP ingestion. Reuse existing layer and server-provider seams, keep secrets server-side, and add synthetic tests before any live provider is enabled.
+The provenance/source-health foundation is implemented and adopted by the NOAA SWPC and UCDP adapters. NOAA SWPC is a read-only contextual feed, not an attribution engine. UCDP is currently a version-pinned API proxy, not yet a reproducible local snapshot importer. Next runtime milestones are OpenAQ as an additive air-quality provider and Copernicus STAC metadata discovery; separately, complete the UCDP snapshot importer with checksums and codebook/version metadata. Reuse existing layer and server-provider seams, keep secrets server-side, and add synthetic tests before enabling any additional provider.
 
 
 ## 12. Further public-source audit (2026-11-17)
@@ -219,7 +219,7 @@ This follow-up adds two public Copernicus services discovered during a fresh sou
 - UCDP currently publishes GED 26.1 downloads under CC BY 4.0 with codebooks and version history. Use the download release as the initial reproducible path; confirm API version and access requirements independently. See https://ucdp.uu.se/downloads/ and https://ucdp.uu.se/apidocs/.
 - OpenAQ's published general-use limit is 60 requests/minute and 2,000/hour; key is supplied in the `X-API-Key` header. Never place it in a browser request. See https://docs.openaq.org/using-the-api/rate-limits and https://docs.openaq.org/using-the-api/api-key.
 
-These additions remain research candidates. No CEMS, EUMETSAT, SWPC, OpenAQ, or UCDP runtime adapter is claimed by this documentation change.
+CEMS and EUMETSAT remain research candidates with no runtime adapter enabled. NOAA SWPC and UCDP runtime adapters are implemented in the repository as described in the reconciled backlog above. OpenAQ remains a candidate and has no runtime adapter. This documentation does not claim that the CEMS or EUMETSAT sources are connected or that any candidate has passed live-provider acceptance testing.
 
 
 ## 13. Military expenditure and arms-transfer datasets (2026-11-17)
