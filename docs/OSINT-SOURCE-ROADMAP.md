@@ -180,7 +180,7 @@ The following are implementation tasks, not completed runtime integrations:
 
 | ID | Work | Priority | Acceptance gate |
 | --- | --- | --- | --- |
-| GEV-OSINT-01 | Add provider-neutral provenance envelope and source-health status contract | P0 | Unit tests for missing timestamps, stale data, failed fetches, rate limits and unknown fields |
+| GEV-OSINT-01 | Add provider-neutral provenance envelope and source-health status contract | P0 | **Foundation helper and unit tests added in branch**; provider adoption, UI health display and end-to-end integration remain pending |
 | GEV-OSINT-02 | Add NOAA SWPC context provider through server-side proxy | P0 | Pinned JSON fixtures, schema drift tests, no client secret, clear observation/forecast labels |
 | GEV-OSINT-03 | Add OpenAQ as an additive provider to the existing air-quality source | P1 | Existing ECCC behavior unchanged; key remains server-side; provider attribution and sensor licence surfaced |
 | GEV-OSINT-04 | Import versioned UCDP GED snapshots with checksums and codebook metadata | P1 | Reproducible import, source version recorded, duplicate/event-time tests, CC BY attribution |
@@ -189,7 +189,7 @@ The following are implementation tasks, not completed runtime integrations:
 | GEV-OSINT-07 | Evaluate OpenSanctions deliberate lookup workflow | P2 | Confirm public-interest eligibility and API terms; explicit user action; entity match score and false-positive caveat |
 | GEV-OSINT-08 | Evaluate Global Fishing Watch aggregated historical maritime context | P2 | Non-commercial terms gate; no individual-vessel operational tracking or tactical use |
 
-No item above is marked implemented by this documentation change. The next code change should be the P0 provenance/source-health contract and SWPC adapter, not a new standalone map layer. Reuse existing layer and server-provider seams, keep secrets server-side, and add synthetic tests before any live provider is enabled.
+The provenance/source-health foundation is implemented in the current feature branch, but no provider adapter is enabled by that helper alone. The next runtime milestone is the P0 NOAA SWPC context adapter, followed by versioned UCDP ingestion. Reuse existing layer and server-provider seams, keep secrets server-side, and add synthetic tests before any live provider is enabled.
 
 
 ## 12. Further public-source audit (2026-11-17)
