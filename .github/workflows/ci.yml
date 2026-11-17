@@ -39,6 +39,8 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci
+      - name: Audit locked dependencies
+        run: npm audit --audit-level=high
 
       - name: Run setup policy checks
         run: npm run doctor -- --json
