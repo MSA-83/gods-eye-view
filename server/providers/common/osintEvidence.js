@@ -33,7 +33,9 @@ function timestamp(value, field, { optional = false } = {}) {
     !ISO_WITH_ZONE.test(value) ||
     !Number.isFinite(Date.parse(value))
   ) {
-    throw new TypeError(`${field} must be an ISO-8601 timestamp with a timezone`);
+    throw new TypeError(
+      `${field} must be an ISO-8601 timestamp with a timezone`,
+    );
   }
   return new Date(value).toISOString();
 }
@@ -41,7 +43,9 @@ function timestamp(value, field, { optional = false } = {}) {
 function optionalText(value, field, maxLength = 512) {
   if (value == null) return undefined;
   if (typeof value !== 'string' || !value.trim() || value.length > maxLength) {
-    throw new TypeError(`${field} must be a non-empty string up to ${maxLength} characters`);
+    throw new TypeError(
+      `${field} must be a non-empty string up to ${maxLength} characters`,
+    );
   }
   return value.trim();
 }
@@ -75,7 +79,9 @@ export function createProvenanceEnvelope(input) {
     sourceUrl.password ||
     [...sourceUrl.searchParams.keys()].some((key) => SECRET_QUERY_KEY.test(key))
   ) {
-    throw new TypeError('sourceUrl must not contain credentials or secret query parameters');
+    throw new TypeError(
+      'sourceUrl must not contain credentials or secret query parameters',
+    );
   }
   sourceUrl.hash = '';
 
@@ -89,7 +95,11 @@ export function createProvenanceEnvelope(input) {
     throw new TypeError('rawSha256 must be a lowercase SHA-256 hex digest');
   }
   const sourceType = input.sourceType ?? 'observation';
-  if (!['observation', 'source-assertion', 'context', 'derived'].includes(sourceType)) {
+  if (
+    !['observation', 'source-assertion', 'context', 'derived'].includes(
+      sourceType,
+    )
+  ) {
     throw new TypeError('sourceType is not supported');
   }
 
