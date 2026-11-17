@@ -281,3 +281,77 @@ SIPRI, the World Bank's SIPRI-derived indicator, and NATO expenditure tables are
 
 UNROCA, UN Comtrade and SIPRI are different datasets with different reporting methods and scopes. They may overlap in underlying government declarations or trade records. Do not count them as independent corroboration without tracing source lineage. Keep UNROCA state-reported transfers, customs trade statistics and SIPRI's research-coded arms-transfer series separate.
 
+
+
+## 11. SIPRI workbook audit and integration boundary (2026-11-17)
+
+A user-supplied copy of `SIPRI-Milex-data-1949-2025_v1.2.xlsx` was inspected as a source artifact. Its worksheets provide country-level military-expenditure series for 1949–2025, with the following measurement families:
+
+- Local currency, financial years and calendar years, at current prices.
+- Constant 2024 US dollars and current US dollars.
+- Military expenditure as a share of GDP.
+- Per-capita expenditure (1988–2025).
+- Military expenditure as a share of government spending (1988–2025).
+- Regional totals and a separate footnotes sheet.
+
+The workbook itself states that blue figures are SIPRI estimates and red figures indicate high uncertainty. Regional totals can also contain estimates for missing country data; unavailable values and non-existent/non-independent country-years use distinct markers. Preserve those distinctions. Do not coerce `...`, `xxx`, blanks, or footnote codes into zero.
+
+The workbook's footnotes are analytically material, not decorative spreadsheet clutter. They describe changes in scope, missing years, off-budget expenditure, pensions, paramilitary inclusion, budget versus actual spending, exchange-rate distortions, and country-specific methodology. Preserve footnote references with each extracted record and expose the relevant caveat in any comparison.
+
+**Important interpretation boundary:** SIPRI defines military expenditure as an input/resource measure, not a direct measure of military capability, readiness, deployment, intent or operational activity. Its series are revised as new sources become available. Recent-year values can be budget/adopted/revised estimates; country coverage and definitions differ. The workbook must therefore be presented as annual strategic context, never as a live military-activity layer or a direct anomaly detector.
+
+**Workbook revision and provenance:** the inspected file identifies itself as the SIPRI 2026 Military Expenditure Database, version `v1.2`, with data through 2025. SIPRI's database page states that the file was revised on 27 April 2026 and supersedes earlier versions. Pin the workbook version, retrieval date, SHA-256 and original filename for every future ingestion run. Do not assume a later workbook has the same columns or footnote numbering.
+
+**Licence gate:** SIPRI states that commercial use requires authorization/licensing. The fair-use limit and conditions must be checked against SIPRI's current Terms and Conditions before extracting, caching, displaying, or redistributing data. A public download does not mean unrestricted redistribution. Do not commit the user-supplied workbook or a bulk derivative dataset to this repository. Prefer source links and a user-controlled, local import workflow until the applicable use rights are confirmed.
+
+### Proposed normalized record
+
+```json
+{
+  "sourceId": "sipri-milex",
+  "datasetVersion": "2026-v1.2",
+  "countryOrRegion": "ISO-3166-1 alpha-3 where applicable",
+  "year": 2025,
+  "periodBasis": "calendar-year | financial-year",
+  "measure": "constant-2024-usd-million | current-usd-million | local-currency | gdp-share | government-spending-share | per-capita-current-usd",
+  "value": 0,
+  "currency": null,
+  "estimateFlag": "sipri-estimate | high-uncertainty | reported | unknown",
+  "footnoteRefs": [],
+  "sourceWorksheet": "Constant (2024) US$",
+  "retrievedAt": "ISO-8601 UTC",
+  "rawSha256": "64 lowercase hexadecimal characters"
+}
+```
+
+This is a proposed schema, not an implemented adapter. Preserve the original displayed cell value and marker separately from the normalized numeric value. Store `...`, `xxx`, blank and missing as distinct states; retain worksheet name, original row/column, unit, period basis and footnote reference. Do not infer ISO codes for disputed or historical entities without a versioned country crosswalk.
+
+### Validation and release gates
+
+1. Verify workbook SHA-256, filename, workbook revision and worksheet names before parsing.
+2. Reject unknown worksheet layouts, unexpected year ranges, duplicate country-year-measure keys and invalid numeric values.
+3. Preserve estimate/high-uncertainty styling and footnote markers; tests must cover each marker and footnote mapping.
+4. Validate year basis, units and constant-dollar base year before comparisons.
+5. Do not merge SIPRI, NATO, EDA or World Bank-delivered SIPRI-derived series into one unlabelled field.
+6. Run an independent spot-check against the official SIPRI page and source notes; record discrepancies instead of silently overwriting.
+7. Keep workbook ingestion offline and user-controlled until licence, retention and redistribution requirements are approved.
+
+## 12. Additional strategic context sources
+
+### European Defence Agency Defence Data
+
+EDA publishes annual defence data collected and compiled since 2006 (some indicators from 2005), including expenditure, investment and selected defence-capability/force indicators. This adds an EU-specific institutional series that can help compare European defence trends, but it overlaps with SIPRI and NATO and uses its own definitions. Keep all three source series separate, label year/forecast/estimate status, and document scope and units. Official portal: https://www.eda.europa.eu/publications-and-data/defence-data
+
+### SIPRI National Budget Archive
+
+The archive provides discovery access to national primary-source documents used in SIPRI expenditure estimates, including budget documents, white papers and official publications. Use it to trace a figure back to the originating document where available. The archive is a discovery index; the original publisher remains the source of the document. It is not independent corroboration of SIPRI where SIPRI already used the same document. Official portal: https://www.sipri.org/databases/national-budget-archive
+
+### World Bank WDI indicators: derivative access path only
+
+World Bank indicators `MS.MIL.XPND.GD.ZS` (military expenditure as a share of GDP) and `MS.MIL.XPND.ZS` (military expenditure as a share of general government expenditure) provide convenient API access, but their stated source is SIPRI. Treat them as a delivery/normalization path to SIPRI-derived data, not an independent source. The World Bank's own indicator pages reference SIPRI's terms. Keep the underlying attribution and licence constraints intact:
+- https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS
+- https://data.worldbank.org/indicator/MS.MIL.XPND.ZS
+
+### Comparability rule
+
+SIPRI, NATO and EDA figures may diverge because their definitions, reporting periods, coverage, GDP assumptions, treatment of pensions/paramilitary forces and estimate cut-off dates differ. A difference is not automatically an error or evidence of concealment. Preserve parallel series with source-specific metadata; compare only after an explicit definition crosswalk.

@@ -366,6 +366,52 @@
       "limits_note": "Keyless preview is limited to 500 records. Current free registered subscription advertises 500 API calls/day, 1 call/second and up to 100,000 records per call; verify current limits before implementation.",
       "use_note": "HS Chapter 93 is a broad customs classification for arms and ammunition, not a complete inventory of military equipment or verified arms deliveries. Reported trade statistics may be delayed, revised, asymmetric or missing; do not infer operational deployment or intent.",
       "proposed_secret": "UN_COMTRADE_API_KEY"
+    },
+    {
+      "id": "eda-defence-data",
+      "name": "European Defence Agency Defence Data",
+      "priority": "P1",
+      "status": "candidate-methodology-and-terms-review",
+      "access": "public-annual-datasets-and-portal",
+      "domains": [
+        "military-expenditure",
+        "force-structure-context",
+        "european-defence-trends"
+      ],
+      "data": [
+        "annual-defence-expenditure",
+        "investment-and-equipment-spending",
+        "defence-expenditure-share-of-gdp",
+        "selected-personnel-and-force-indicators"
+      ],
+      "endpoint": "https://www.eda.europa.eu/publications-and-data/defence-data",
+      "license_note": "Review reuse terms for each annual report and downloadable table; preserve EDA attribution. Keep EDA's member-state definitions separate from SIPRI and NATO series.",
+      "limits_note": "Annual data collected and compiled by EDA since 2006, with some indicators since 2005. Dataset years and indicator availability vary.",
+      "use_note": "Historical and annual European defence trend context only. Not a live activity feed. Do not combine series without documenting coverage, definitions, currency, fiscal-year and estimate differences.",
+      "proposed_secret": null
+    },
+    {
+      "id": "sipri-national-budget-archive",
+      "name": "SIPRI National Budget Archive",
+      "priority": "P2",
+      "status": "candidate-documentary-source-review",
+      "access": "public-document-links-and-archive",
+      "domains": [
+        "military-expenditure",
+        "primary-source-documents",
+        "claim-verification"
+      ],
+      "data": [
+        "national-budget-documents",
+        "defence-white-papers",
+        "budget-bills",
+        "official-statistical-releases"
+      ],
+      "endpoint": "https://www.sipri.org/databases/national-budget-archive",
+      "license_note": "Archive links to government and institutional documents; assess reuse rights at the original publisher for each document. Cite SIPRI's archive as discovery provenance and the original publisher as the document source.",
+      "limits_note": "Documents available depend on country and year; the archive is updated annually from 2021 data onwards. Links and availability may change.",
+      "use_note": "Use to trace and audit the primary documents underlying military-expenditure estimates. This is documentary evidence, not a standardized expenditure time series and not independent of SIPRI when the document is already a SIPRI input.",
+      "proposed_secret": null
     }
   ]
 }
