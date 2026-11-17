@@ -220,3 +220,39 @@ This follow-up adds two public Copernicus services discovered during a fresh sou
 - OpenAQ's published general-use limit is 60 requests/minute and 2,000/hour; key is supplied in the `X-API-Key` header. Never place it in a browser request. See https://docs.openaq.org/using-the-api/rate-limits and https://docs.openaq.org/using-the-api/api-key.
 
 These additions remain research candidates. No CEMS, EUMETSAT, SWPC, OpenAQ, or UCDP runtime adapter is claimed by this documentation change.
+
+
+## 13. Military expenditure and arms-transfer datasets (2026-11-17)
+
+A further official-source review identified three useful strategic-context datasets. These are annual, country-level or multi-year series; none is a live military activity feed.
+
+### SIPRI Military Expenditure Database
+
+- **Coverage:** Annual national military-expenditure time series from 1949 through 2025, with values in local currency, current/constant US dollars, GDP share and per-capita measures. The 2026 workbook revision was published 27 April 2026.
+- **Access:** Public downloadable Excel workbook. The World Bank Indicators API exposes the SIPRI-derived indicator `MS.MIL.XPND.GD.ZS` (military expenditure as a share of GDP) through a keyless API v2.
+- **Terms:** SIPRI permits fair-use statistical/analytical use with attribution; reproduction beyond fair-use and commercial use require permission/licensing. A World Bank API endpoint does not erase the underlying SIPRI source terms.
+- **Integration:** Prefer annual snapshots and the World Bank API for selected indicators; preserve source year, release/revision date, retrieval time, country code, units and missing-value semantics.
+- **Caveat:** Expenditure is an input measure, not a direct measure of military capability, readiness, force posture or operational activity. The World Bank series is derived from SIPRI and must not be counted as independent corroboration.
+- **Official sources:** https://www.sipri.org/databases/milex ; https://www.sipri.org/about/terms-and-conditions ; https://api.worldbank.org/v2/country/all/indicator/MS.MIL.XPND.GD.ZS?format=json ; https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
+
+### SIPRI Arms Transfers Database
+
+- **Coverage:** Publicly accessible records of international transfers of major conventional arms from 1950 through the most recent full calendar year; the 9 March 2026 update covers 1950-2025.
+- **Access:** Web database with CSV export; annual updates.
+- **Terms:** Non-commercial use and SIPRI fair-use restrictions apply unless a separate licence is obtained.
+- **Integration:** Use aggregated country/year and five-year trend series. Preserve database version, query parameters and export date.
+- **Caveat:** SIPRI's Trend-Indicator Value (TIV) estimates the volume of major-arms transfers; it is not a monetary transaction value, market price or proof of delivery timing beyond the source's own coding. Treat uncertain estimates and incomplete public reporting explicitly.
+- **Official sources:** https://www.sipri.org/databases/armstransfers ; https://www.sipri.org/databases/armstransfers/sources-and-methods ; https://www.sipri.org/databases/financial-value-global-arms-trade
+
+### NATO Defence Expenditure Reports
+
+- **Coverage:** Annual expenditure series and breakdowns for NATO Allies, published as PDF and spreadsheet tables.
+- **Access:** Public reports and downloadable tables; no stable public API was verified.
+- **Integration:** Parse only versioned annual tables, preserve NATO's definition, cut-off date, estimated/actual status and source workbook.
+- **Caveat:** NATO and SIPRI use different definitions and collection methods. The 2014-2025 report uses a 3 June 2025 information cut-off and identifies 2024/2025 figures as estimates. Do not silently splice the series or label estimates as actuals.
+- **Official source:** https://www.nato.int/en/news-and-events/articles/news/2025/08/28/defence-expenditure-of-nato-countries-2014-2025
+
+### Comparability and source-independence rule
+
+SIPRI, the World Bank's SIPRI-derived indicator, and NATO expenditure tables are not three independent confirmations of a single event. Keep them as separate source records, preserve their lineage and definitions, and use them for slow-moving strategic baselines rather than event attribution.
+
