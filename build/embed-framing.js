@@ -45,6 +45,10 @@ export function embedFramingPlugin({
   const policy = `frame-ancestors ${allowed}`;
   const install = (server) => {
     server.middlewares.use((req, res, next) => {
+      // Vite 6 preview middleware may invoke the configured hook in a request
+      // context that is not Express/Connect-shaped during startup probes.
+      // Ignore non-HTTP invocations safely; ordinary requests retain policy.
+      if (!req || typeof req.url !== 'string') return next();
       if (!isEmbedDocumentRequest(req.url)) return next();
       // The server's own headers are written when the response is sent, so
       // intercept them rather than setting ours first.
