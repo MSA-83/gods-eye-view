@@ -123,6 +123,22 @@ export const AIR_QUALITY_PROVIDERS = Object.freeze({
       Object.freeze({ id: 'very-high', max: Infinity }),
     ]),
   }),
+  openaq: Object.freeze({
+    id: 'openaq',
+    scale: 'PM2.5 µg/m³',
+    label: msg('Air quality'),
+    network: 'OpenAQ community monitoring network',
+    coverage: msg('Global · latest PM2.5 stations available to OpenAQ'),
+    // These are display bands for concentration triage, not a jurisdictional
+    // AQI. The scale stays explicit so analysts do not compare it directly
+    // with Canada’s AQHI integer.
+    bands: Object.freeze([
+      Object.freeze({ id: 'low', max: 12 }),
+      Object.freeze({ id: 'moderate', max: 35 }),
+      Object.freeze({ id: 'high', max: 55 }),
+      Object.freeze({ id: 'very-high', max: Infinity }),
+    ]),
+  }),
 });
 
 /** Band descriptor for an id, or null. */

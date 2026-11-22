@@ -2446,6 +2446,17 @@ no longer reaches Cesium, so a caller handing it a Cesium viewer,
 with no renderer bound, loads the `./render/cesium/unbound` export once
 first.
 
+The air-quality source is now a fault-isolated composite: ECCC continues to
+provide keyless Canadian AQHI observations, while the optional OpenAQ v3
+adapter provides normalized global PM2.5 observations when the server has
+`OPENAQ_API_KEY`. OpenAQ credentials remain server-only; the browser calls only
+same-origin `/api/openaq`, and the provider proxy applies bounded discovery,
+concurrency, timeouts, response-size limits, rate limiting, in-memory caching,
+and stale fallback. OpenAQ readings retain an explicit `PM2.5 µg/m³` scale and
+must not be presented as AQHI or a universal AQI. A missing key returns a
+sanitized unavailable response for the optional branch rather than disabling
+ECCC.
+
 Cockpit (`./ui/cockpit`) flies the camera through the camera port on the frame
 port's `preUpdate`, with the shared geo maths, and no longer loads the Cesium
 camera factory: a caller handing it a Cesium viewer, with no

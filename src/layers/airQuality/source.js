@@ -1,5 +1,6 @@
 import { readResponseJsonCapped } from '../../sources/httpBody.js';
 import { normalizeAqhiStations, normalizeAqhiObservations } from './model.js';
+import { createOpenAqAirQualitySource } from './openaq.js';
 
 // A portable export (package.json): no i18n here. Failures stay English data;
 // the Layers panel and the Weather card show them translated.
@@ -108,3 +109,36 @@ export function createEcccAirQualitySource({
     },
   };
 }
+
+/**
+ * Combine ECCC AQHI with optional OpenAQ PM2.5. ECCC remains authoritative for
+ * its existing Canada coverage; OpenAQ failures are isolated so an optional
+ * credential or upstream outage cannot blank the established layer.
+ * @param {{eccc?: object, openaq?: object}} [options]
+ * @returns {{getSnapshot: Function}}
+ */
+export function createCompositeAirQualitySource({ eccc, openaq } = {}) {
+  const ecccSource = eccc || createEcccAirQualitySource();
+  const openaqSource = openaq || createOpenAqAirQualitySource();
+  return {
+    async getSnapshot({ signal } = {}) {
+      const [ecccResult, openaqResult] = await Promise.allSettled([
+        ecccSource.getSnapshot({ signal }),
+        openaqSource.getSnapshot({ signal }),
+      ]);
+      if (
+        ecccResult.status === 'rejected' &&
+        openaqResult.status === 'rejected'
+      )
+        throw ecccResult.reason || openaqResult.reason;
+      return [
+        ...(ecccResult.status === 'fulfilled' ? ecccResult.value : []),
+        ...(openaqResult.status === 'fulfilled'
+          ? openaqResult.value?.readings || []
+          : []),
+      ];
+    },
+  };
+}
+
+export { createOpenAqAirQualitySource } from './openaq.js';

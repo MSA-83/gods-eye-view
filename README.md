@@ -97,6 +97,7 @@ We've got a plurality of sensor systems watching the planet right now. Satellite
 - **🔗 Share Links:** Camera, style, layers, and even one tracked target serialize into a URL — a live target is a handoff, not a bookmark.
 - **🏠 Reset Globe:** One control — or one sentence — back to the full Earth.
 - **🌦️ Weather:** Animate GFS or ECMWF forecast wind, replay observed radar, satellite clouds and lightning on one timeline, and follow NHC/CPHC and JTWC cyclone tracks. No key needed.
+- **🫁 Air quality:** Combine keyless ECCC AQHI station observations in Canada with optional global OpenAQ PM2.5 monitoring. OpenAQ is server-proxied, bounded, cached, and explicitly labeled as a concentration scale rather than AQHI/AQI.
 - **📷 Mapped ALPR cameras:** License-plate-reader camera locations tagged in OpenStreetMap, one city at a time. Locations and tags only; no key needed.
 - **🔭 Satellite passes:** Ask by voice when any loaded satellite next rises over you: rise, peak and set times, and whether you can see it.
 - **🔎 Analyst answers:** Count, filter and rank satellites, datacenters and dams by voice, alongside flights, ships, fires and quakes; answers say when a feed is stale or on a fallback.
@@ -122,7 +123,10 @@ We've got a plurality of sensor systems watching the planet right now. Satellite
 **Local setup needs no account or API keys.** The app opens with
 Esri satellite imagery and keyless terrain. OSM is the fallback if Esri is
 unreachable. Flights, military traffic, satellites, earthquakes, public
-cameras, radio, and launches are available without keys.
+cameras, radio, launches, and the ECCC air-quality layer are available without
+keys. OpenAQ is optional: set `OPENAQ_API_KEY` in the server-only `.env` to
+enable bounded global PM2.5 observations; without it, the OpenAQ branch remains
+unavailable and ECCC continues independently.
 
 For photorealistic 3D, add a **Cesium ion token** for eligible personal,
 non-commercial use, or a **Google Maps key** for the direct, metered route and
