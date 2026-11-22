@@ -39,6 +39,8 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci
+      - name: Audit dependencies with documented exception policy
+        run: node scripts/audit-dependencies.mjs
 
       - name: Run setup policy checks
         run: npm run doctor -- --json

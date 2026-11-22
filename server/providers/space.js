@@ -5,3 +5,5 @@ export {
   LL2_CACHE_TTL_MS,
   launchLibraryRequestHeaders,
 } from './space/launch-library.js';
+
+export { swpcProxy } from './space/swpc.js';
