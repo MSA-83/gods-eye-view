@@ -10203,3 +10203,10 @@ browser-only media links, refresh cadence, and location provenance where
 available. When MLIT serves its recognized adjustment image, `/api/cctv/frame`
 returns a God’s Eye maintenance card and `/api/cctv/health` reports the camera
 as degraded with the provider-adjustment reason.
+
+
+## Copernicus Data Space STAC metadata discovery
+
+The server registers `copernicusStacProxy()` in `server/providers/local.js` and exposes `/api/copernicus/stac` plus `/api/copernicus/stac/status`. The browser-facing adapter is `src/sources/copernicusStac.js` and uses only same-origin requests. Search filters are bounded to WGS84 bbox, ISO datetime intervals, three collections, 1-50 results, and a bounded opaque cursor. The proxy applies same-site protection, request and response caps, timeout, per-client/global rate limiting, cache reuse, stale fallback and source-health classification.
+
+The route is metadata-only. It normalizes product identifiers, geometry/bbox, sensing time, platform, orbit, cloud cover, links, assets and provenance, but it never follows asset URLs or automatically downloads imagery. Optional `COPERNICUS_CLIENT_ID` and `COPERNICUS_CLIENT_SECRET` are read only on the server and are never exposed to the browser. Collection-specific terms and current CDSE quotas remain operational prerequisites for any future image-processing workflow.

@@ -422,6 +422,11 @@
     ],
     "external": ["ws"]
   },
+  "copernicus-stac-source": {
+    "exports": ["./sources/copernicus-stac"],
+    "modules": ["src/sources/copernicusStac.js"],
+    "external": []
+  },
   "adsb-lol-source": {
     "exports": ["./sources/adsb-lol"],
     "modules": ["src/data/adsbLolFallback.js", "src/sources/adsbFields.js"],

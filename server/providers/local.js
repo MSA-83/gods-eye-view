@@ -6,6 +6,7 @@ import { ucdpGedProxy } from './conflict/ucdp.js';
 import { tomtomProxy } from './traffic.js';
 import { firmsProxy } from './firms.js';
 import { openaqProxy } from './openaq.js';
+import { copernicusStacProxy } from './earthObservation/copernicus.js';
 import { terrainHeightsProxy } from './terrain.js';
 import { adsbdbProxy } from './aircraft/enrichment.js';
 import { overpassProxy } from './overpass.js';
@@ -67,6 +68,7 @@ function localProviderPlugins({
     tomtomProxy(),
     firmsProxy(),
     openaqProxy(),
+    copernicusStacProxy(),
     rocketLaunchesProxy(),
     terrainHeightsProxy(),
     adsbdbProxy(),
