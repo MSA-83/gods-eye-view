@@ -1,7 +1,8 @@
 {
   "schema_version": "1.0",
   "generated_at": "2026-11-17",
-  "status": "research-candidates-not-enabled",
+  "last_reconciled_at": "2026-11-23",
+  "status": "mixed-implemented-and-research-candidates",
   "principles": [
     "read-only",
     "server-side-secrets",
@@ -16,7 +17,7 @@
       "id": "noaa-swpc",
       "name": "NOAA Space Weather Prediction Center",
       "priority": "P0",
-      "status": "candidate",
+      "status": "implemented-runtime",
       "access": "public-keyless-json",
       "domains": [
         "space-weather",
@@ -38,7 +39,7 @@
       "id": "ucdp-ged",
       "name": "Uppsala Conflict Data Program Georeferenced Event Dataset",
       "priority": "P0",
-      "status": "candidate",
+      "status": "partial-runtime",
       "access": "free-download-cc-by-4.0;api-token-request",
       "domains": [
         "conflict-events",
@@ -59,7 +60,7 @@
       "id": "copernicus-dataspace-stac",
       "name": "Copernicus Data Space Ecosystem STAC",
       "priority": "P1",
-      "status": "candidate",
+      "status": "candidate-next-runtime",
       "access": "free-registered-account-oauth",
       "domains": [
         "earth-observation",
@@ -81,7 +82,7 @@
       "id": "openaq-v3",
       "name": "OpenAQ API v3",
       "priority": "P1",
-      "status": "candidate",
+      "status": "implemented-runtime",
       "access": "free-api-key",
       "domains": [
         "air-quality",
