@@ -8,7 +8,6 @@ import { issTelemetryProxy } from './space/issTelemetry.js';
 import { ucdpGedProxy } from './conflict/ucdp.js';
 import { tomtomProxy } from './traffic.js';
 import { firmsProxy } from './firms.js';
-import { openaqProxy } from './openaq.js';
 import { copernicusStacProxy } from './earthObservation/copernicus.js';
 import { usgsLandsatStacProxy } from './earthObservation/landsat.js';
 import { terrainHeightsProxy } from './terrain.js';
@@ -79,7 +78,7 @@ function localProviderPlugins({
     issTelemetryProxy(),
     tomtomProxy(),
     withCount('local-firms', firmsProxy()),
-    openaqProxy(),
+    openAqProxy(),
     copernicusStacProxy(),
     usgsLandsatStacProxy(),
     rocketLaunchesProxy(),
