@@ -516,8 +516,10 @@
     "modules": [
       "server/providers/space.js",
       "server/providers/space/celestrak.js",
+      "server/providers/space/swpc.js",
       "src/sources/tle.js",
       "server/providers/common/same-site.js",
+      "server/providers/common/osintEvidence.js",
       "src/localRequestGate.mjs",
       "server/providers/space/cooldown.js",
       "server/providers/space/launch-library.js",

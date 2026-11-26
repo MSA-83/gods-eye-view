@@ -3,6 +3,8 @@ import path from 'node:path';
 import { openAqProxy } from './openAq.js';
 import { airQualityFieldProxy } from './airQualityField.js';
 import { openSkyProxy } from './aircraft/opensky.js';
+import { celestrakProxy, rocketLaunchesProxy, swpcProxy } from './space.js';
+import { ucdpGedProxy } from './conflict/ucdp.js';
 import { celestrakProxy, rocketLaunchesProxy } from './space.js';
 import { issTelemetryProxy } from './space/issTelemetry.js';
 import { tomtomProxy } from './traffic.js';
@@ -66,6 +68,10 @@ function localProviderPlugins({
     return provider;
   }
   return [
+    openSkyProxy(),
+    celestrakProxy(),
+    swpcProxy(),
+    ucdpGedProxy(),
     withCount('flights', openSkyProxy()),
     withCount('satellites', celestrakProxy()),
     issTelemetryProxy(),
