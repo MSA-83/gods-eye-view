@@ -8556,6 +8556,11 @@
     ],
     "external": []
   },
+  "usgs-landsat-stac-source": {
+    "exports": ["./sources/usgs-landsat-stac"],
+    "modules": ["src/sources/landsatStac.js"],
+    "external": []
+  },
   "rail-paths": {
     "exports": ["./layers/rail/paths"],
     "modules": ["src/data/railPaths.js"],

@@ -493,6 +493,40 @@
       "limits_note": "API version and access terms must be checked at implementation time; do not assume anonymous access.",
       "use_note": "Static/catalogue metadata for trackable unclassified objects; not live tracking and does not distribute surveillance-derived orbital or attitude ephemerides. Complement, do not replace, public TLE/ephemeris sources.",
       "proposed_secret": "ESA_DISCOS_API_CREDENTIALS"
+    },
+    {
+      "id": "usgs-landsat-stac",
+      "name": "USGS LandsatLook STAC",
+      "priority": "P1",
+      "status": "implemented-runtime",
+      "access": "public-keyless",
+      "domains": [
+        "earth-observation",
+        "retrospective-change-detection"
+      ],
+      "data": [
+        "Landsat Collection 2 product metadata",
+        "scene footprints and sensing times",
+        "bounded asset references"
+      ],
+      "endpoint": "https://landsatlook.usgs.gov/stac-server/",
+      "license_note": "USGS states Landsat data are public domain; verify current AWS and product access terms before redistributing assets.",
+      "limits_note": "Local proxy caps results at 50, collections at 3, response bodies at 6 MiB, request URLs at 8 KiB, and applies timeout, caching, stale fallback, same-site protection, and rate limits.",
+      "use_note": "Metadata-only discovery for retrospective, human-reviewed Earth observation context; no automatic scene downloads and no tactical or causal inference.",
+      "proposed_secret": null,
+      "implementation": {
+        "server_route": "/api/landsat/stac",
+        "status_route": "/api/landsat/stac/status",
+        "server_module": "server/providers/earthObservation/landsat.js",
+        "browser_module": "src/sources/landsatStac.js",
+        "validation": [
+          "server provider contract tests",
+          "browser adapter tests",
+          "format check",
+          "boundary check",
+          "production build"
+        ]
+      }
     }
   ]
 }
