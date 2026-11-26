@@ -26,6 +26,7 @@ test('encodes bounded STAC search filters for the same-origin proxy', () => {
   assert.throws(() => encodeQuery({ bbox: [1, 2] }), /bbox/);
   assert.throws(() => encodeQuery({ limit: 51 }), /limit/);
   assert.throws(() => createLandsatStacSource({ endpoint: 'https://provider.example' }), /same-origin/);
+  assert.throws(() => createLandsatStacSource({ endpoint: '//provider.example' }), /same-origin/);
 });
 
 test('searches through the proxy and exposes only normalized proxy payloads', async () => {

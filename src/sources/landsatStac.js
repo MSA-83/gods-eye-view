@@ -57,7 +57,11 @@ export function createLandsatStacSource({
   fetchImpl = (...args) => globalThis.fetch(...args),
   endpoint = DEFAULT_ENDPOINT,
 } = {}) {
-  if (typeof endpoint !== 'string' || !endpoint.startsWith('/'))
+  if (
+    typeof endpoint !== 'string' ||
+    !endpoint.startsWith('/') ||
+    endpoint.startsWith('//')
+  )
     throw new TypeError('endpoint must be a same-origin path');
 
   async function request(path) {
