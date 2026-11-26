@@ -100,7 +100,11 @@ export function mapillaryProxy() {
   };
   return {
     name: 'mapillary-proxy',
-    configureServer: (server) => install(server.middlewares),
-    configurePreviewServer: (server) => install(server.middlewares),
+    configureServer(server) {
+      install(server.middlewares);
+    },
+    configurePreviewServer(server) {
+      install(server.middlewares);
+    },
   };
 }
