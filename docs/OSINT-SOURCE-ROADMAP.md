@@ -1,6 +1,6 @@
 # OSINT Source Expansion Roadmap
 
-**Status:** research baseline; no new provider adapter is enabled by this document.  
+**Status:** reconciled implementation roadmap; runtime adapter status is recorded in the backlog and candidate registry below.
 **Research date:** 2026-11-17  
 **Target:** Gods-eye-view (GEV), globe-first public-source OSINT and anomaly context.
 
@@ -35,7 +35,7 @@ The current upstream source register already documents substantial coverage. Avo
 - the existing military-aircraft layer and GNSS layer.
 
 Existing code seams worth reusing:
-- `src/layers/airQuality/source.js`: currently ECCC AQHI; add OpenAQ as an additional provider, not a replacement.
+- `src/layers/airQuality/source.js`: ECCC AQHI plus the additive OpenAQ PM2.5 provider; OpenAQ is not a replacement for ECCC.
 - `src/layers/gnss/source.js`: currently obtains aircraft-reported GNSS integrity through the same-origin proxy; add space-weather context independently.
 - `src/layers/military/`: existing public aircraft layer; do not create a second military-flight poller.
 - `src/layers/news/`: existing news/event ingestion; use it for source-backed conflict context rather than inventing a parallel headline feed.
@@ -77,9 +77,9 @@ Existing code seams worth reusing:
 4. Add synthetic fixtures and schema/contract tests before enabling network calls.
 
 ### Phase B — low-cost contextual feeds
-1. Add NOAA SWPC as a GNSS context provider, separate from aircraft-reported integrity facts.
-2. Add OpenAQ as a second air-quality provider behind the existing air-quality source interface.
-3. Add UCDP GED as a versioned, historical conflict-event dataset. Prefer a downloadable, checksummed release for the first iteration; add API access only after token handling and paging tests.
+1. NOAA SWPC is implemented as a GNSS context provider, separate from aircraft-reported integrity facts.
+2. OpenAQ is implemented as a second air-quality provider behind the existing air-quality source interface.
+3. UCDP GED has a bounded, version-pinned API adapter; complete the reproducible downloadable snapshot importer with checksums and codebook metadata before treating it as a durable historical archive.
 
 ### Phase C — imagery and maritime context
 1. Add Copernicus STAC discovery first; do not automatically download full scenes. Record product IDs, acquisition time, platform, orbit direction, polarisation, cloud cover where applicable, footprint and asset links.
@@ -139,9 +139,13 @@ Before a provider is enabled:
 
 ## 8. Decision
 
-Implement NOAA SWPC, OpenAQ and UCDP first. They add distinct explanatory value while fitting existing GEV layer seams. Treat Copernicus STAC and Global Fishing Watch as the next research integrations, gated by account setup, quota and licence review. ACLED and ReliefWeb remain optional until access and reuse terms are confirmed.
+NOAA SWPC and OpenAQ are implemented runtime integrations, and UCDP has a bounded version-pinned API adapter. They add distinct explanatory value while fitting existing GEV layer seams. Treat Copernicus STAC as the next runtime integration: metadata-only discovery first, gated by account setup, OAuth handling, quota, collection terms, and synthetic contract tests. Treat Global Fishing Watch as a later research integration gated by organisational eligibility and non-commercial terms. ACLED and ReliefWeb remain optional until access and reuse terms are confirmed.
 
-This roadmap is a research/design artifact. It does not claim that any new provider has been connected, that the credentials have been rotated, or that runtime integration tests have passed.
+This roadmap distinguishes implemented runtime adapters from research candidates. It does not claim that credentials have been rotated or that live upstream acceptance testing is a permanent guarantee; deterministic fixtures and local validation remain the release gate.
+
+### Reconciliation note — 2026-11-23
+
+This roadmap was reconciled after the OpenAQ implementation was validated and published to `MSA-83/gods-eye-view`. NOAA SWPC and OpenAQ are now marked as implemented runtime adapters; UCDP is marked partial because its bounded API proxy exists but its reproducible checksummed snapshot importer remains outstanding. Copernicus Data Space STAC metadata discovery is therefore the next P1 runtime milestone. The candidate registry uses the same status distinctions and does not imply that unimplemented candidates are connected. Copernicus Data Space STAC metadata discovery is now implemented behind `/api/copernicus/stac`; its credentials, when configured, remain server-only and its route never downloads scenes.
 
 
 ## 9. Upstream synchronization review (2026-11-17)
@@ -163,9 +167,9 @@ The upstream PR descriptions report successful tests/builds for the relevant cha
 - **Global Energy Monitor (GEM):** open-access downloadable datasets describing energy infrastructure and resources. Useful as a static strategic-infrastructure baseline and for retrospective context. This is not a live activity feed. Review the licence and attribution attached to each specific dataset before bundling or redistributing it: https://globalenergymonitor.org/download-data/
 - **OpenSanctions:** useful for carefully sourced entity-resolution and sanctions-context lookups, not for identifying military operations. Hosted API access requires an API key; public-interest work may qualify for a free key, while commercial API use is metered/paid. Treat this as access-gated, not a generally unlimited free API. Never auto-screen incidental people from live map observations; use only deliberate analyst-initiated entity research with false-match warnings: https://www.opensanctions.org/docs/api/ and https://www.opensanctions.org/docs/api/authentication/
 
-### NOAA SWPC contract update
+### NOAA SWPC contract and implementation notes
 
-NOAA's SWPC data service exposes products, JSON, text and archive endpoints. Its 2026 service-change notice announced JSON format changes for several products, including planetary K-index and solar-wind magnetic-field summaries. Before implementing the SWPC adapter:
+NOAA's SWPC data service exposes products, JSON, text and archive endpoints. Its 2026 service-change notice announced JSON format changes for several products, including planetary K-index and solar-wind magnetic-field summaries. For the implemented adapter, retain these contract controls during future maintenance:
 1. Pin the exact product endpoint(s) and document their current schema.
 2. Preserve source timestamps and distinguish observed values from forecasts/alerts.
 3. Add fixtures for both valid and malformed/changed payloads.
@@ -176,7 +180,7 @@ Official documentation: https://www.spaceweather.gov/content/data-access and htt
 
 ## 11. Implementation backlog and acceptance gates
 
-The following are implementation tasks, not completed runtime integrations:
+The following backlog records both completed runtime integrations and remaining implementation tasks:
 
 | ID | Work | Priority | Acceptance gate |
 | --- | --- | --- | --- |
@@ -185,11 +189,15 @@ The following are implementation tasks, not completed runtime integrations:
 | GEV-OSINT-03 | Add OpenAQ as an additive provider to the existing air-quality source | P1 | Pending; existing ECCC behavior must remain unchanged; key stays server-side; provider attribution and sensor licence surfaced |
 | GEV-OSINT-04 | Import versioned UCDP GED snapshots with checksums and codebook metadata | P1 | **Partially implemented:** version-pinned GED 26.1 API proxy at `/api/conflict-events/ucdp`, token server-side, 31-day windows, page cap, cache/stale fallback, daily request budget, provenance and health. Reproducible snapshot importer, checksums and codebook bundle remain pending |
 | GEV-OSINT-05 | Add Copernicus STAC metadata discovery | P1 | OAuth kept server-side; bounded paging; metadata-only default; no automatic full-scene downloads |
+| GEV-OSINT-03 | Add OpenAQ as an additive provider to the existing air-quality source | P1 | **Implemented:** `server/providers/openaq.js` and `src/layers/airQuality/openaq.js`; ECCC remains independent; key stays server-side; bounded discovery, response caps, rate limiting, cache/stale fallback, attribution, explicit PM2.5 scale, and middleware/normalization tests are present |
+| GEV-OSINT-04 | Import versioned UCDP GED snapshots with checksums and codebook metadata | P1 | **Partially implemented:** version-pinned GED 26.1 API proxy at `/api/conflict-events/ucdp`, token server-side, 31-day windows, page cap, cache/stale fallback, daily request budget, provenance and health. Reproducible snapshot importer, checksums and codebook bundle remain pending |
+| GEV-OSINT-05 | Add Copernicus STAC metadata discovery | P1 | **Implemented:** `server/providers/earthObservation/copernicus.js` and `src/sources/copernicusStac.js`; fixed official STAC endpoint, optional server-only OAuth, bounded bbox/time/collection/limit/cursor validation, response cap, timeout, cache/stale fallback, rate limiting, same-site protection, metadata-only normalization, response-level opaque pagination, attribution/provenance, deterministic server/browser tests, formatting, boundary and build gates. No asset URL fetching or automatic scene downloads |
 | GEV-OSINT-06 | Evaluate GEM static infrastructure packs | P2 | Dataset-by-dataset licence review; version, download date, checksum and attribution |
 | GEV-OSINT-07 | Evaluate OpenSanctions deliberate lookup workflow | P2 | Confirm public-interest eligibility and API terms; explicit user action; entity match score and false-positive caveat |
 | GEV-OSINT-08 | Evaluate Global Fishing Watch aggregated historical maritime context | P2 | Non-commercial terms gate; no individual-vessel operational tracking or tactical use |
 
 The provenance/source-health foundation is implemented and adopted by the NOAA SWPC and UCDP adapters. NOAA SWPC is a read-only contextual feed, not an attribution engine. UCDP is currently a version-pinned API proxy, not yet a reproducible local snapshot importer. Next runtime milestones are OpenAQ as an additive air-quality provider and Copernicus STAC metadata discovery; separately, complete the UCDP snapshot importer with checksums and codebook/version metadata. Reuse existing layer and server-provider seams, keep secrets server-side, and add synthetic tests before enabling any additional provider.
+The provenance/source-health foundation is implemented and adopted by the NOAA SWPC, UCDP, OpenAQ, and Copernicus adapters. NOAA SWPC is a read-only contextual feed, not an attribution engine. UCDP is currently a version-pinned API proxy, not yet a reproducible local snapshot importer. OpenAQ is an additive, fault-isolated air-quality provider with server-only credentials. Copernicus STAC is a metadata-only earth-observation catalog proxy; it supports retrospective discovery and corroboration, not automatic scene processing or tactical monitoring. Separately, complete the UCDP snapshot importer with checksums and codebook/version metadata. Reuse existing layer and server-provider seams, keep secrets server-side, and add synthetic tests before enabling any additional provider.
 
 
 ## 12. Further public-source audit (2026-11-17)
@@ -220,6 +228,7 @@ This follow-up adds two public Copernicus services discovered during a fresh sou
 - OpenAQ's published general-use limit is 60 requests/minute and 2,000/hour; key is supplied in the `X-API-Key` header. Never place it in a browser request. See https://docs.openaq.org/using-the-api/rate-limits and https://docs.openaq.org/using-the-api/api-key.
 
 CEMS and EUMETSAT remain research candidates with no runtime adapter enabled. NOAA SWPC and UCDP runtime adapters are implemented in the repository as described in the reconciled backlog above. OpenAQ remains a candidate and has no runtime adapter. This documentation does not claim that the CEMS or EUMETSAT sources are connected or that any candidate has passed live-provider acceptance testing.
+CEMS and EUMETSAT remain research candidates with no runtime adapter enabled. NOAA SWPC, UCDP, and OpenAQ runtime adapters are implemented in the repository as described in the reconciled backlog above; UCDP's durable snapshot importer remains pending. OpenAQ's runtime path is server-proxied and does not imply that its upstream key or provider terms are universally available. This documentation does not claim that the CEMS or EUMETSAT sources are connected or that any candidate has passed permanent live-provider acceptance testing.
 
 
 ## 13. Military expenditure and arms-transfer datasets (2026-11-17)
@@ -359,7 +368,7 @@ SIPRI, NATO and EDA figures may diverge because their definitions, reporting per
 
 ## 13. NOAA SWPC adapter implementation
 
-**Status: implemented on feature branch; contract tests added; runtime CI pending.**
+**Status: implemented and published in the MSA-83 repository; contract tests added; broader runtime CI and UI presentation remain pending.**
 
 The local provider stack exposes a read-only `GET /api/space-weather` route. It requests four fixed NOAA SWPC products: active alerts, planetary Kp, replacement RTSW magnetic-field data, and replacement RTSW solar-wind plasma data. Each feed has an independent cache lifetime and health classification; partial upstream failure can retain a previous successful response with an explicit partial/stale marker.
 
@@ -430,3 +439,15 @@ The candidate registry now includes three additional sources. These are research
 
 Before implementation, run a duplicate-capability review against the existing provider tree, add synthetic fixtures, document attribution and freshness, and prove that source outages cannot suppress unrelated layers. Do not enable any of these sources merely because they appear in the candidate registry.
 
+
+## 14. Copernicus STAC runtime reconciliation (2026-11-23)
+
+The Copernicus Data Space STAC integration is implemented and validated in the fork. The server uses the official STAC root `https://stac.dataspace.copernicus.eu/v1/` and POST search endpoint, while optional OAuth uses the official CDSE token endpoint documented in the authentication and token references below. The browser calls only the same-origin proxy. The implementation requests a bounded STAC field projection, normalizes GeoJSON features into provenance-bearing metadata records, accepts only bounded opaque response-level pagination tokens, and returns product asset references without dereferencing them.
+
+The release gate passed deterministic Copernicus server tests (7/7), browser adapter tests (3/3), focused OpenAQ regression tests (7/7), repository formatting, and `git diff --check`. The remaining release checks are repository boundary validation, production build, bundle secret inspection, and publication to `MSA-83/gods-eye-view`.
+
+Official references: https://documentation.dataspace.copernicus.eu/APIs/STAC.html; https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Catalog.html; https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Catalog/Examples.html; https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Overview/Authentication.html; https://documentation.dataspace.copernicus.eu/APIs/Token.html; https://documentation.dataspace.copernicus.eu/Quotas.html.
+
+## Runtime milestone: USGS Landsat STAC metadata discovery
+
+USGS LandsatLook STAC is now an implemented, keyless Earth Observation metadata provider alongside Copernicus Data Space. The server proxy is `/api/landsat/stac`, with `/api/landsat/stac/status` for health/configuration, and the browser boundary is `src/sources/landsatStac.js`. The implementation uses bounded GET search, fixed field projection, response-level safe pagination, caching, stale fallback, rate limiting, same-site checks, sanitized failures, and provenance. It deliberately stops at metadata and safe references: it does not download scenes or make automatic change, intent, or causal inferences. See `docs/USGS-LANDSAT-STAC.md` for the official USGS references, public-domain caveat, and operational contract.
