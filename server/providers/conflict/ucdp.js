@@ -538,11 +538,12 @@ export function ucdpGedProxy({
     }
   }
 
-  const install = ({ middlewares }) =>
+  const install = ({ middlewares }) => {
     middlewares.use('/api/conflict-events/ucdp', (req, res) => {
       if (admitSameSiteKeyless(req, res)) return;
       return handler(req, res);
     });
+  };
   return {
     name: 'ucdp-ged-proxy',
     configureServer: install,
