@@ -1,7 +1,8 @@
 {
   "schema_version": "1.0",
   "generated_at": "2026-11-17",
-  "status": "research-candidates-not-enabled",
+  "last_reconciled_at": "2026-11-23",
+  "status": "mixed-implemented-and-research-candidates",
   "principles": [
     "read-only",
     "server-side-secrets",
@@ -16,7 +17,7 @@
       "id": "noaa-swpc",
       "name": "NOAA Space Weather Prediction Center",
       "priority": "P0",
-      "status": "candidate",
+      "status": "implemented-runtime",
       "access": "public-keyless-json",
       "domains": [
         "space-weather",
@@ -38,7 +39,7 @@
       "id": "ucdp-ged",
       "name": "Uppsala Conflict Data Program Georeferenced Event Dataset",
       "priority": "P0",
-      "status": "candidate",
+      "status": "partial-runtime",
       "access": "free-download-cc-by-4.0;api-token-request",
       "domains": [
         "conflict-events",
@@ -59,29 +60,41 @@
       "id": "copernicus-dataspace-stac",
       "name": "Copernicus Data Space Ecosystem STAC",
       "priority": "P1",
-      "status": "candidate",
-      "access": "free-registered-account-oauth",
+      "status": "implemented-runtime",
+      "access": "public-keyless-or-optional-server-oauth",
       "domains": [
         "earth-observation",
         "retrospective-change-detection"
       ],
       "data": [
-        "sentinel-1-grd",
-        "sentinel-1-slc",
-        "sentinel-2-l1c",
-        "sentinel-2-mosaics"
+        "STAC product metadata",
+        "sentinel-1-and-sentinel-2-discovery",
+        "footprints-and-asset-references"
       ],
       "endpoint": "https://stac.dataspace.copernicus.eu/v1/",
       "license_note": "Check collection-specific Copernicus terms and any contributing-mission conditions.",
-      "limits_note": "Published free-tier quotas vary by API; consult live quota documentation.",
-      "use_note": "Metadata discovery first; user-requested retrospective comparisons, not real-time tactical monitoring.",
-      "proposed_secret": "COPERNICUS_OAUTH_CLIENT_CREDENTIALS"
+      "limits_note": "Local proxy caps results at 50, collections at 3, response bodies at 6 MiB, and applies timeout, caching, stale fallback, and rate limits; consult current CDSE quotas before changing bounds.",
+      "use_note": "Metadata-only discovery for retrospective, human-reviewed change detection; no automatic scene downloads and no tactical or causal inference.",
+      "proposed_secret": "COPERNICUS_CLIENT_ID_AND_COPERNICUS_CLIENT_SECRET",
+      "implementation": {
+        "server_route": "/api/copernicus/stac",
+        "status_route": "/api/copernicus/stac/status",
+        "server_module": "server/providers/earthObservation/copernicus.js",
+        "browser_module": "src/sources/copernicusStac.js",
+        "validation": [
+          "server provider contract tests",
+          "browser adapter tests",
+          "format check",
+          "boundary check",
+          "production build"
+        ]
+      }
     },
     {
       "id": "openaq-v3",
       "name": "OpenAQ API v3",
       "priority": "P1",
-      "status": "candidate",
+      "status": "implemented-runtime",
       "access": "free-api-key",
       "domains": [
         "air-quality",
@@ -412,6 +425,108 @@
       "limits_note": "Documents available depend on country and year; the archive is updated annually from 2021 data onwards. Links and availability may change.",
       "use_note": "Use to trace and audit the primary documents underlying military-expenditure estimates. This is documentary evidence, not a standardized expenditure time series and not independent of SIPRI when the document is already a SIPRI input.",
       "proposed_secret": null
+    },
+    {
+      "id": "gdacs",
+      "name": "Global Disaster Awareness and Coordination System",
+      "priority": "P1",
+      "status": "candidate-api-terms-and-attribution-review",
+      "access": "public-keyless-api-geojson",
+      "domains": [
+        "disaster-events",
+        "environmental-hazards",
+        "humanitarian-context"
+      ],
+      "data": [
+        "earthquakes",
+        "tropical-cyclones",
+        "floods",
+        "other-multi-hazard-event-alerts"
+      ],
+      "endpoint": "https://www.gdacs.org/gdacsapi/swagger/index.html",
+      "license_note": "GDACS requests source acknowledgement as Global Disaster Awareness and Coordination System, GDACS; review current disclaimer and terms before reuse.",
+      "limits_note": "No stable public quota verified in this review; implement conservative caching, bounded date windows and pagination.",
+      "use_note": "Multi-hazard alert and event context. Alert levels are GDACS classifications, not ground-truth severity or confirmation; preserve event type, alert level, issue time, geometry and source link.",
+      "proposed_secret": null
+    },
+    {
+      "id": "nasa-firms",
+      "name": "NASA Fire Information for Resource Management System",
+      "priority": "P1",
+      "status": "candidate-map-key-and-product-review",
+      "access": "free-map-key-api-wfs-wms",
+      "domains": [
+        "active-fire-detections",
+        "thermal-anomalies",
+        "environmental-hazards"
+      ],
+      "data": [
+        "modis-active-fire-detections",
+        "viirs-active-fire-detections",
+        "sensor-confidence",
+        "fire-radiative-power"
+      ],
+      "endpoint": "https://firms.modaps.eosdis.nasa.gov/api/",
+      "license_note": "Follow NASA Earthdata/FIRMS data-use guidance and preserve source, sensor and product attribution; verify product-specific conditions.",
+      "limits_note": "Free MAP_KEY required. Published limit is 5,000 transactions per 10-minute interval; large requests can count as multiple transactions. Product availability and latency vary by sensor and processing stream.",
+      "use_note": "Satellite thermal anomaly detections are not proof of a confirmed fire, cause or intent. Preserve acquisition time in UTC, sensor/platform, product/version, confidence scale and FRP; do not compare MODIS numeric confidence directly with VIIRS categorical confidence.",
+      "proposed_secret": "FIRMS_MAP_KEY"
+    },
+    {
+      "id": "esa-discos",
+      "name": "ESA Database and Information System Characterising Objects in Space",
+      "priority": "P2",
+      "status": "candidate-registration-and-terms-gated",
+      "access": "registered-account-api",
+      "domains": [
+        "space-object-metadata",
+        "launch-history",
+        "orbital-object-catalogue-context"
+      ],
+      "data": [
+        "object-registration-details",
+        "launch-vehicle-descriptions",
+        "spacecraft-metadata"
+      ],
+      "endpoint": "https://discosweb.esoc.esa.int/",
+      "license_note": "Registration and acceptance of DISCOSweb terms required; derived works and redistributions must include ESA's prescribed source acknowledgement.",
+      "limits_note": "API version and access terms must be checked at implementation time; do not assume anonymous access.",
+      "use_note": "Static/catalogue metadata for trackable unclassified objects; not live tracking and does not distribute surveillance-derived orbital or attitude ephemerides. Complement, do not replace, public TLE/ephemeris sources.",
+      "proposed_secret": "ESA_DISCOS_API_CREDENTIALS"
+    },
+    {
+      "id": "usgs-landsat-stac",
+      "name": "USGS LandsatLook STAC",
+      "priority": "P1",
+      "status": "implemented-runtime",
+      "access": "public-keyless",
+      "domains": [
+        "earth-observation",
+        "retrospective-change-detection"
+      ],
+      "data": [
+        "Landsat Collection 2 product metadata",
+        "scene footprints and sensing times",
+        "bounded asset references"
+      ],
+      "endpoint": "https://landsatlook.usgs.gov/stac-server/",
+      "license_note": "USGS states Landsat data are public domain; verify current AWS and product access terms before redistributing assets.",
+      "limits_note": "Local proxy caps results at 50, collections at 3, response bodies at 6 MiB, request URLs at 8 KiB, and applies timeout, caching, stale fallback, same-site protection, and rate limits.",
+      "use_note": "Metadata-only discovery for retrospective, human-reviewed Earth observation context; no automatic scene downloads and no tactical or causal inference.",
+      "proposed_secret": null,
+      "implementation": {
+        "server_route": "/api/landsat/stac",
+        "status_route": "/api/landsat/stac/status",
+        "server_module": "server/providers/earthObservation/landsat.js",
+        "browser_module": "src/sources/landsatStac.js",
+        "validation": [
+          "server provider contract tests",
+          "browser adapter tests",
+          "format check",
+          "boundary check",
+          "production build"
+        ]
+      }
     }
   ]
 }

@@ -342,11 +342,12 @@ export function swpcProxy({
     });
   }
 
-  const install = ({ middlewares }) =>
+  const install = ({ middlewares }) => {
     middlewares.use('/api/space-weather', (req, res) => {
       if (admitSameSiteKeyless(req, res)) return;
       return handler(req, res);
     });
+  };
   return {
     name: 'noaa-swpc-proxy',
     configureServer: install,
