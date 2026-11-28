@@ -1,3 +1,5 @@
+import { findMatch } from './entityLookup.js';
+import { worldClock } from '../time/worldClock.js';
 import { readEntityRecord } from '../data/entityRecords.js';
 import { nextTick, watch } from 'vue';
 import { getConfiguredLayerCounts } from '../services/application.js';
@@ -50,14 +52,8 @@ import {
   readShareFollowSubject,
 } from './shareFollow.js';
 
-import {
-  getLocale,
-  onLocaleChange,
-  persistLocale,
-  setLocale,
-  t,
-} from '../i18n/index.js';
-import { applyLocaleChoice } from './localePicker.js';
+import { getLocale, onLocaleChange, t } from '../i18n/index.js';
+import { switchLocale } from '../i18n/page.js';
 import { PanelNavigation } from './panelNavigation.js';
 import { applicationPinia, createUiRuntime } from './vueRuntime.js';
 import { useContextStore } from './stores/context.js';
@@ -86,13 +82,12 @@ import { useGlobeActionsStore } from './stores/globeActions.js';
 import { useRecordingStore } from './stores/recording.js';
 import { onPlacePacksLoadingChange } from '../data/placeBelow.js';
 import {
-  hideOsmCredit,
   registerDynamicCredit,
-  showOsmCredit,
   WIKIDATA_PLACES_CREDIT,
 } from '../data/dataCredits.js';
 import { withPlacePacks } from './placePacksLoading.js';
 import { preloadOwnerFlags } from './ownerFlag.js';
+import { flushAllPanelContent } from './rail/panelContent.js';
 
 /**
  * Central UI orchestrator for the God's Eye View application.
@@ -124,12 +119,16 @@ export class StyleManager extends ShellFacade {
    *   back to (degrees): the view the app started from.
    * @param {string[]} [options.startLayers] - the layers a bare address (one
    *   that carries no link) starts with; none by default.
+   * @param {?Function} [options.entityLookup] - the host's lookup of things
+   *   anywhere for the search box (createApplicationControls in
+   *   src/app/controls.js).
    */
   constructor(
     viewer,
     {
       mapStackController = null,
       placeSearch,
+      entityLookup = null,
       services,
       requestServices,
       initialShareCode = null,
@@ -201,11 +200,32 @@ export class StyleManager extends ShellFacade {
       // The Omnibar shows names from the bundled Wikidata packs.
       creditPlaces: () =>
         registerDynamicCredit(this.viewer, WIKIDATA_PLACES_CREDIT),
-      // Photon's suggestions are OpenStreetMap data: credited while shown.
-      creditSuggestions: (shown) =>
-        shown
-          ? showOsmCredit(this.viewer, 'omnibar')
-          : hideOsmCredit(this.viewer, 'omnibar'),
+      // Things anywhere, from the host's lookup when it gives one.
+      lookupEntities:
+        typeof entityLookup === 'function'
+          ? (request) => entityLookup(request)
+          : null,
+      // A looked-up thing found in its layer, its layer switched on if need
+      // be (src/ui/entityLookup.js); the search box picks it.
+      findLookedUp: (match, { signal } = {}) =>
+        findMatch({
+          match,
+          dataManager: this._dataManager,
+          setLayer: (id, enabled) =>
+            this._dataManager?.setEnabled(id, enabled, { origin: 'user' }),
+          centre: (lat, lon) =>
+            this.runImmediateNavigation('target', () =>
+              this.services.flyToLandmark?.(this.viewer, lat, lon, {
+                range: 6000,
+                pitch: -45,
+                heading: 0,
+                buildingHeight: 0,
+                duration: 2.0,
+              }),
+            ),
+          seek: (ms) => worldClock.seek(ms),
+          signal,
+        }),
     });
     // Scrolling at a screen edge steps through that side's rail panels.
     this._removeRailEdgeScroll = installRailEdgeScroll();
@@ -861,22 +881,28 @@ export class StyleManager extends ShellFacade {
   }
 
   /**
-   * Switch to `locale`: nothing for the active language, otherwise store it
-   * and apply it to the page.
+   * Switch to `locale` once its catalog is loaded: nothing for the active
+   * language, otherwise store it and apply it to the page. Choices made
+   * while a catalog loads replace it: the last one wins. A catalog that
+   * fails to load keeps the current language.
    * @param {string} locale
-   * @returns {'unchanged'|'switched'}
+   * @returns {Promise<'unchanged'|'switched'|'superseded'|'failed'>}
    */
-  _chooseLocale(locale) {
-    return applyLocaleChoice(locale, {
-      current: getLocale(),
-      switchLocale: (next) => {
-        setLocale(persistLocale(next));
-        // Focus once, as the redrawn picker mounts; a later remount leaves
-        // focus where it is.
-        this._publishLocalePicker({ focus: true });
-        void nextTick(() => this._publishLocalePicker());
-      },
-    });
+  async _chooseLocale(locale) {
+    let result;
+    try {
+      result = await switchLocale(locale);
+    } catch (error) {
+      console.error(`[i18n] the ${locale} catalog failed to load`, error);
+      return 'failed';
+    }
+    if (result === 'switched') {
+      // Focus once, as the redrawn picker mounts; a later remount leaves
+      // focus where it is.
+      this._publishLocalePicker({ focus: true });
+      void nextTick(() => this._publishLocalePicker());
+    }
+    return result;
   }
 
   /**
@@ -1359,6 +1385,8 @@ export class StyleManager extends ShellFacade {
         ? forceEnabled
         : !document.body.classList.contains('ui-clean-view');
     document.body.classList.toggle('ui-clean-view', shouldEnable);
+    // Leaving clean view shows the panels again: repaint what they owe first.
+    if (!shouldEnable) flushAllPanelContent();
     if (this._cleanViewBtn) {
       this._cleanViewBtn.classList.toggle('active', shouldEnable);
     }

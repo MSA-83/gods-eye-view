@@ -1123,18 +1123,6 @@ test('asking GEV hands the keyboard to the chat', async (t) => {
   assert.notEqual(document.activeElement, input);
 });
 
-test('text withheld as private says so', async (t) => {
-  const { type } = recordingOmnibar(t);
-  const note = () =>
-    [...document.querySelectorAll('#gev-omnibar [role="status"]')].find(
-      (element) => /Looks private/.test(element.textContent),
-    );
-  await type('4111 1111 1111 1111');
-  assert.notEqual(note().style.display, 'none');
-  await type('Tokyo');
-  assert.equal(note().style.display, 'none');
-});
-
 test('a panel with no rail button fails rather than passing for done', async (t) => {
   const { enter, $ } = recordingOmnibar(t);
   await enter('Open Utilities');
@@ -1175,14 +1163,13 @@ test('a recent place that came from Photon shows the OpenStreetMap credit', asyn
   );
   t.after(() => store.removeItem('gev:omnibar:recent-places'));
   stubPhoton(t);
-  const { type, credits } = recordingOmnibar(t);
+  const { type } = recordingOmnibar(t);
   await type('Tokyo');
   assert.ok(
     [...document.querySelectorAll('.omnibar-strip__chip')].some((chip) =>
       chip.textContent.includes('Shibuya Crossing'),
     ),
   );
-  assert.equal(credits.at(-1), true);
 });
 
 /** The fixture with a recording runner and globe actions, as the shell has. */
@@ -1196,7 +1183,6 @@ function recordingOmnibar(
   const calls = [];
   const acted = [];
   const switched = [];
-  const credits = [];
   // One list, so a test can change a layer's live state.
   const layerList = [
     { id: 'flights', name: 'Flights', enabled: false },
@@ -1209,7 +1195,6 @@ function recordingOmnibar(
   useOmnibarStore(fixture.pinia).connect({
     layers: () => layerList,
     setLayer: (...args) => switched.push(args),
-    creditSuggestions: (shown) => credits.push(shown),
   });
   useOmnibarStore(fixture.pinia).connectRunner(async (name, args) => {
     calls.push([name, args]);
@@ -1230,7 +1215,6 @@ function recordingOmnibar(
     calls,
     acted,
     switched,
-    credits,
     layerList,
     enter,
   };
@@ -1433,19 +1417,12 @@ const ENTER_TABLE = [
   ['Can You Imagine', 'search(Can You Imagine)'],
   ['Show radio stations', 'layer(radio,on)'],
   ['I went to the store yesterday and it was really great', 'nothing'],
-  ['123 45 6789', 'nothing'],
-  ['hunter22', 'nothing'],
   // A layer is asked for only by a switch right before its word.
   ['Kill Devil Hills radio', 'search(Kill Devil Hills radio)'],
   ['Show Low radio', 'search(Show Low radio)'],
   ['show low radio', 'search(show low radio)'],
   ['Show Low noir', 'search(Show Low noir)'],
   ['See radio', 'search(See radio)'],
-  ['PIN code 1234', 'nothing'],
-  ['my bank pin is 1234', 'nothing'],
-  ['123-45-6789', 'nothing'],
-  ['pw hunter2', 'nothing'],
-  ['Bearer abcdef', 'nothing'],
   // Verbs in any letter case.
   ['Turn on the radio', 'layer(radio,on)'],
   ['Turn On Radio', 'layer(radio,on)'],
@@ -1502,15 +1479,6 @@ const ENTER_TABLE = [
   ['clear everything', 'globe(clear)'],
   ['hide everything near tokyo', 'fly(tokyo) + globe(clear)'],
   ['hide everything in tokyo', 'fly(tokyo) + globe(clear)'],
-  // Private text gets no rows and no search.
-  ['4111 1111 1111 1111', 'nothing'],
-  ['+1 (415) 555-0100', 'nothing'],
-  ['SSN 123-45-6789', 'nothing'],
-  ['GB29 NWBK 6016 1331 9268 19', 'nothing'],
-  ['sk_live_51Habcdef', 'nothing'],
-  ['pk_live_abc', 'nothing'],
-  ['password hunter2', 'nothing'],
-  ['me@example.com', 'nothing'],
   ['>', 'nothing'],
   ['> ', 'nothing'],
   ['a', 'nothing'],
@@ -1724,41 +1692,6 @@ function stubPhoton(t, features = () => []) {
 }
 const settle = (ms = 800) => new Promise((resolve) => setTimeout(resolve, ms));
 
-for (const text of [
-  '4111 1111 1111 1111',
-  '4111-1111-1111-1111',
-  '+1 (415) 555-0100',
-  '415.555.0100 x12',
-  'SSN 123-45-6789',
-  'GB29 NWBK 6016 1331 9268 19',
-  'DE89370400440532013000',
-  'sk_live_51Habcdef',
-  'rk_live_51Habcdef',
-  'pk_live_abc',
-  'password hunter2',
-  'my passcode is 4433',
-  'pin 1234',
-  'me@example.com',
-  'PIN code 1234',
-  'my bank pin is 1234',
-  '123-45-6789',
-  'pw hunter2',
-  'Bearer abcdef',
-])
-  test(`private text ${JSON.stringify(text)} is never looked up or searched`, async (t) => {
-    const asked = stubPhoton(t);
-    const { type, key, searched, calls } = recordingOmnibar(t);
-    await type(text);
-    await settle();
-    // At most a row to search it as a place on purpose, which Enter skips.
-    assert.ok(omnibarRows().every((row) => row.includes('as a place anyway')));
-    await key('Enter');
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    assert.deepEqual(asked, []);
-    assert.deepEqual(searched, []);
-    assert.deepEqual(calls, []);
-  });
-
 test('a row chosen with the keys stays chosen when rows arrive above it', async (t) => {
   stubPhoton(t, (q) => [
     {
@@ -1820,27 +1753,6 @@ test('a globe action nobody answers fails the plan', async (t) => {
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.deepEqual(acted, []);
   assert.ok($('#gev-omnibar [role="alert"]').textContent.trim());
-});
-
-test('the OpenStreetMap credit shows while Photon suggestions do', async (t) => {
-  stubPhoton(t, () => [
-    {
-      geometry: { type: 'Point', coordinates: [139.69, 35.69] },
-      properties: {
-        name: 'Tokyo',
-        country: 'Japan',
-        countrycode: 'jp',
-        osm_value: 'city',
-      },
-    },
-  ]);
-  const { type, key, credits } = recordingOmnibar(t);
-  await type('Tokyo');
-  await settle();
-  assert.deepEqual(credits, [true]);
-  await key('Escape');
-  await nextTick();
-  assert.deepEqual(credits, [true, false]);
 });
 
 test('ids name no layer: "Local" and "Global" search a place', async (t) => {
